@@ -1,0 +1,105 @@
+import { Button } from "@shared/ui";
+
+interface HeroProps {
+  onPrimary: () => void;
+  onSecondary: () => void;
+}
+
+export function Hero({ onPrimary, onSecondary }: HeroProps) {
+  return (
+    <section
+      className="container-page"
+      style={{ paddingTop: 56, paddingBottom: 24 }}
+    >
+      <div
+        style={{
+          position: "relative",
+          borderRadius: "var(--radius-xl)",
+          overflow: "hidden",
+          minHeight: 340,
+          display: "flex",
+          alignItems: "center",
+          background: "var(--brand-900)",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: "url(/photos/hero-a.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(90deg, rgba(18,28,36,0.95) 0%, rgba(18,28,36,0.85) 48%, rgba(18,28,36,0.5) 78%, rgba(18,28,36,0.28) 100%)",
+          }}
+        />
+        <div
+          style={{
+            position: "relative",
+            padding: "48px 56px",
+            maxWidth: 620,
+          }}
+        >
+          <span
+            style={{
+              display: "inline-block",
+              fontFamily: "var(--font-text)",
+              fontSize: 12,
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: "var(--brand-200)",
+              background: "rgba(255,255,255,0.12)",
+              padding: "6px 12px",
+              borderRadius: "var(--radius-full)",
+              marginBottom: 20,
+            }}
+          >
+            Empowering Student Careers
+          </span>
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 700,
+              fontSize: 44,
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+              color: "#fff",
+              margin: "0 0 16px",
+            }}
+          >
+            Find your next gig and earn on your schedule
+          </h1>
+          <p
+            style={{
+              fontFamily: "var(--font-text)",
+              fontSize: 17,
+              lineHeight: 1.55,
+              color: "rgba(255,255,255,0.85)",
+              margin: "0 0 28px",
+              maxWidth: 480,
+            }}
+          >
+            Join a community of 10,000+ students getting paid for their
+            professional skills while they study. No long-term commitments,
+            just great opportunities.
+          </p>
+          <div style={{ display: "flex", gap: 14 }}>
+            <Button onDark variant="primary" size="lg" onClick={onPrimary}>
+              Explore All Gigs
+            </Button>
+            <Button onDark variant="outline" size="lg" onClick={onSecondary}>
+              How It Works
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

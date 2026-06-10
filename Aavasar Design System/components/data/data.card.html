@@ -1,0 +1,56 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Cards, Stats & Avatars" subtitle="Base card, dark/earth feature cards, KPI stat tiles, avatars" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { margin: 0; font-family: var(--font-text); background: var(--surface-page); padding: 24px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; align-items: start; }
+  .avatars { display: flex; gap: 12px; align-items: center; margin-top: 16px; }
+</style>
+</head>
+<body>
+  <div class="stats" id="stats"></div>
+  <div class="cards" id="cards"></div>
+  <div class="avatars" id="avatars"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script type="text/babel" src="../../ds-runtime.js"></script>
+  <script type="text/babel">
+    const { Card, StatCard, Avatar, Badge } = window.AavasarDesignSystem_e30e7a;
+    const Ico = ({ n }) => <i data-lucide={n} style={{ width: 18, height: 18 }}></i>;
+    ReactDOM.createRoot(document.getElementById('stats')).render(<>
+      <StatCard label="Total Earnings" value="NPR 1,24,000" icon={<Ico n="banknote" />} iconTone="success" />
+      <StatCard label="Active Gigs" value="14" delta="+2 this week" icon={<Ico n="briefcase" />} iconTone="slate" />
+      <StatCard label="Avg Rating" value="4.9/5" icon={<Ico n="star" />} iconTone="soft" />
+    </>);
+    ReactDOM.createRoot(document.getElementById('cards')).render(<>
+      <Card>
+        <div style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:18,color:'var(--text-strong)',marginBottom:6}}>Event Photographer</div>
+        <div style={{fontSize:14,color:'var(--text-muted)',marginBottom:12}}>Student photographer for a 4-hour event.</div>
+        <Badge tone="active">Active</Badge>
+      </Card>
+      <Card tone="dark" radius="xl">
+        <div style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:18,marginBottom:6}}>UX/UI Designer</div>
+        <div style={{fontSize:14,color:'var(--brand-200)'}}>Remote · 20h/week · slate feature card</div>
+      </Card>
+      <Card tone="earth">
+        <div style={{fontSize:12,fontWeight:600,letterSpacing:'.04em',textTransform:'uppercase',color:'rgba(255,255,255,.7)',marginBottom:8}}>Course in Progress</div>
+        <div style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:18}}>Meta Front-End</div>
+      </Card>
+    </>);
+    ReactDOM.createRoot(document.getElementById('avatars')).render(<>
+      <Avatar src="../../assets/photos/peer-network.jpg" name="Pratikshya" size={48} />
+      <Avatar name="Priya Sharma" size={48} />
+      <Avatar name="Binod Thapa" size={40} />
+      <Avatar name="Isha Giri" shape="squircle" size={40} />
+    </>);
+    setTimeout(() => lucide.createIcons(), 50);
+  </script>
+</body>
+</html>

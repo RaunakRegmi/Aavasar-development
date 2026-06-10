@@ -1,0 +1,24 @@
+<!-- @dsCard group="Spacing" viewport="700x190" name="Elevation / Shadow" subtitle="Soft, low-contrast — elevation = border + faint shadow" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; font-family: var(--font-text); background: var(--surface-page); padding: 28px; }
+  .row { display: flex; gap: 22px; }
+  .item { text-align: center; flex: 1; }
+  .box { height: 70px; background: #fff; border: 1px solid var(--border-default); border-radius: var(--radius-md); }
+  .tok { font-size: 12px; font-weight: 600; color: var(--text-strong); margin-top: 12px; }
+  .val { font-size: 11px; color: var(--text-subtle); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-xs)"></div><div class="tok">xs · buttons</div><div class="val">0 1px 2px /.05</div></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-sm)"></div><div class="tok">sm · cards</div><div class="val">0 1px 3px /.10</div></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-md)"></div><div class="tok">md · raised</div><div class="val">0 4px 12px</div></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-lg)"></div><div class="tok">lg · overlay</div><div class="val">0 12px 32px</div></div>
+  </div>
+</body>
+</html>

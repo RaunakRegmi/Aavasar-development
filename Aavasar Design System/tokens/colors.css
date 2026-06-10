@@ -1,0 +1,82 @@
+/* ============================================================
+   Aavasar — Color tokens
+   Brand: trustworthy slate-blue, warm-neutral surfaces,
+   functional accent colors. Localized for Nepal (NPR).
+   ============================================================ */
+:root {
+  /* ---- Brand: slate blue ---- */
+  --brand-900: #1F2E3A;
+  --brand-800: #263948;
+  --brand-700: #304554;   /* PRIMARY — logo, primary buttons, headings */
+  --brand-600: #3C5263;
+  --brand-500: #475C6C;   /* lighter slate — feature cards, hovers */
+  --brand-400: #5C7180;
+  --brand-300: #8499A8;
+  --brand-200: #BED4E7;   /* light blue tint — text on dark slate */
+  --brand-100: #DCE6EE;
+  --brand-50:  #EEF3F7;
+
+  /* ---- Ink / neutrals (warm-gray) ---- */
+  --ink-900: #1B1C1D;     /* strongest text */
+  --ink-700: #43474C;     /* body text */
+  --ink-600: #575F66;     /* secondary text */
+  --ink-500: #6B7280;     /* muted text, captions */
+  --ink-400: #969A9F;     /* placeholder */
+  --ink-300: #C3C7CC;     /* disabled, dividers */
+  --ink-200: #E5E7EB;     /* default border */
+  --ink-100: #ECEBEC;     /* subtle border */
+
+  /* ---- Surfaces ---- */
+  --surface-0:    #FFFFFF;   /* cards, inputs */
+  --surface-page: #FBF9FA;   /* app/page background — warm off-white */
+  --surface-1:    #F5F3F4;   /* subtle raised panels */
+  --surface-2:    #EFEDEE;   /* stat strips, wells */
+  --surface-3:    #E3E2E3;   /* footer */
+  --surface-dark: #304554;   /* dark surface (= brand-700) */
+
+  /* ---- Functional / semantic ---- */
+  --success-600: #0E9E72;
+  --success-500: #10B981;    /* earnings, positive deltas */
+  --success-100: #D7F2E7;    /* "active" badge bg */
+  --success-700-text: #0A7355;
+
+  --info-600: #2563EB;
+  --info-500: #3B82F6;       /* informational accents */
+  --info-100: #DBEAFE;       /* "submitted / reviewing" badge bg */
+  --info-700-text: #1D4ED8;
+
+  --danger-600: #9F1717;
+  --danger-500: #BA1A1A;     /* errors, rejection */
+  --danger-100: #FBE2E2;
+  --danger-700-text: #8C1414;
+
+  --warning-500: #C77D11;
+  --warning-100: #FBEBD2;
+
+  --accent-earth: #553E23;   /* learning / course card */
+  --accent-earth-100: #EDE3D6;
+
+  --star: #F5B400;           /* rating stars */
+
+  /* ---- Semantic aliases ---- */
+  --text-strong:      var(--ink-900);
+  --text-body:        var(--ink-700);
+  --text-muted:       var(--ink-600);
+  --text-subtle:      var(--ink-500);
+  --text-placeholder: var(--ink-400);
+  --text-on-brand:    #FFFFFF;
+  --text-on-brand-soft: var(--brand-200);
+  --text-link:        var(--brand-700);
+
+  --surface-card:     var(--surface-0);
+  --surface-app:      var(--surface-page);
+
+  --border-default:   var(--ink-200);
+  --border-subtle:    var(--ink-100);
+  --border-strong:    var(--ink-300);
+  --border-focus:     var(--brand-700);
+
+  --primary:          var(--brand-700);
+  --primary-hover:    var(--brand-800);
+  --primary-press:    var(--brand-900);
+}

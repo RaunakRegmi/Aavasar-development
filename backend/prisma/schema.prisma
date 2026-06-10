@@ -1,0 +1,269 @@
+// Aavasar — Prisma schema
+//
+// Models mirror the frontend's L6 contracts exactly (see
+// frontend/src/features/*/contracts). When a mapper translates a row
+// to a DTO the shape should match without massaging beyond renaming
+// snake_case → camelCase and integer-minor → Money.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Top-level user account. A user is exactly one of:
+///   • student     — earns; default for sign-up
+///   • recruiter   — hires; gated by email domain or admin promotion
+///   • admin       — internal staff
+enum UserRole {
+  student
+  recruiter
+  admin
+}
+
+/// Lifecycle states for a posted Gig. Matches `GigStatusSchema` in
+/// the frontend.
+enum GigStatus {
+  draft
+  active
+  reviewing
+  submitted
+  completed
+  rejected
+}
+
+enum GigLocationKind {
+  remote
+  onsite
+  hybrid
+}
+
+enum GigPayKind {
+  hourly
+  fixed
+}
+
+enum OAuthProvider {
+  google
+  linkedin
+  github
+}
+
+/// Kind of file uploaded — used to route to the right size cap and
+/// to scope retrieval ("show me the user's most recent portfolio PDF").
+enum UploadKind {
+  avatar
+  banner
+  portfolio   // CV / portfolio PDF
+  nid         // Gov ID for trust verification — private, never publicly surfaced
+  attachment
+  companyLogo
+  companyDocument
+}
+
+/// Lifecycle states for a company registration.
+enum CompanyRegistrationStatus {
+  pending_review
+  approved
+  rejected
+}
+
+model User {
+  id                    String   @id @default(cuid())
+  email                 String   @unique
+  /// Null when the user signed up via OAuth and never set a local password.
+  passwordHash          String?  @map("password_hash")
+  fullName              String   @map("full_name")
+  role                  UserRole @default(student)
+  avatarUrl             String?  @map("avatar_url")
+  bannerUrl             String?  @map("banner_url")
+  /// One-line role descriptor: "Final-year CS @ TU · React + Python".
+  headline              String?
+  /// Long-form bio shown on the public profile.
+  bio                   String?
+  /// Free-form skill tags. Lower-snake-cased for search.
+  skills                String[] @default([])
+  onboardingCompleted   Boolean  @default(false) @map("onboarding_completed")
+  verified              Boolean  @default(false)
+  /// Refresh-flow safety net: bumped on every password change / forced logout.
+  /// Refresh tokens carry the value at issue time; mismatch → reject.
+  tokenVersion          Int      @default(0) @map("token_version")
+
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  refreshTokens         RefreshToken[]
+  oauthAccounts         OAuthAccount[]
+  postedGigs            Gig[]            @relation("PostedBy")
+  passwordResets        PasswordReset[]
+  companyMembership     Company?         @relation("CompanyContact")
+  uploads               Upload[]
+  applications          Application[]
+
+  @@map("users")
+}
+
+/// Hashed (sha256) refresh tokens. We never store the raw token, so a
+/// DB leak doesn't grant session access. Rotated on every use; the
+/// previous record is marked revoked so reuse is detectable.
+model RefreshToken {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  tokenHash   String   @unique @map("token_hash")
+  expiresAt   DateTime @map("expires_at")
+  revokedAt   DateTime? @map("revoked_at")
+  /// Forensics — populated when revocation was triggered by suspected reuse.
+  replacedById String?  @map("replaced_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+/// OAuth account bindings. A single User may link multiple providers;
+/// each (provider, subject) pair is unique.
+model OAuthAccount {
+  id            String        @id @default(cuid())
+  userId        String        @map("user_id")
+  provider      OAuthProvider
+  /// Provider's stable user identifier ("sub" / "id" from the IdP).
+  subject       String
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, subject])
+  @@index([userId])
+  @@map("oauth_accounts")
+}
+
+/// Single-use password-reset token. Stored hashed; consumed on success.
+model PasswordReset {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  tokenHash   String   @unique @map("token_hash")
+  expiresAt   DateTime @map("expires_at")
+  consumedAt  DateTime? @map("consumed_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_resets")
+}
+
+/// Employers / recruiting orgs that post gigs.
+model Company {
+  id                  String                      @id @default(cuid())
+  name                String
+  /// PAN / VAT registration number for invoicing.
+  panVat              String?                     @map("pan_vat")
+  /// Government business registration number.
+  registrationNumber  String?                     @map("registration_number")
+  /// Phone number of the company owner / primary contact.
+  ownerPhone          String?                     @map("owner_phone")
+  registrationStatus  CompanyRegistrationStatus   @default(pending_review) @map("registration_status")
+  verified            Boolean                     @default(false)
+  /// Primary contact (also the recruiter who created the company).
+  contactUserId       String?                     @unique @map("contact_user_id")
+  contactUser         User?                       @relation("CompanyContact", fields: [contactUserId], references: [id], onDelete: SetNull)
+  logoUrl             String?                     @map("logo_url")
+  documentUrl         String?                     @map("document_url")
+
+  createdAt           DateTime                    @default(now()) @map("created_at")
+  updatedAt           DateTime                    @updatedAt @map("updated_at")
+
+  gigs                Gig[]
+
+  @@index([registrationStatus])
+  @@map("companies")
+}
+
+/// A posted gig. Carries money in integer minor units (paisa) to dodge
+/// floating point — the frontend's `Money` contract expects exactly this.
+model Gig {
+  id              String          @id @default(cuid())
+  title           String
+  category        String
+  description     String
+  companyId       String          @map("company_id")
+  postedByUserId  String          @map("posted_by_user_id")
+  location        GigLocationKind
+  /// Display string: "2 Weeks", "4 Hours", "Project-based"
+  duration        String
+  payKind         GigPayKind      @map("pay_kind")
+  payAmountMinor  Int             @map("pay_amount_minor")
+  payCurrency     String          @default("NPR") @map("pay_currency")
+  tags            String[]        @default([])
+  status          GigStatus       @default(draft)
+  isPremium       Boolean         @default(false) @map("is_premium")
+  postedAt        DateTime        @default(now()) @map("posted_at")
+
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  postedBy        User            @relation("PostedBy", fields: [postedByUserId], references: [id], onDelete: Restrict)
+  applications    Application[]
+
+  @@index([status, postedAt])
+  @@index([companyId])
+  @@index([postedByUserId])
+  @@map("gigs")
+}
+
+/// File metadata for every upload (avatar, portfolio PDF, attachment).
+/// The bytes themselves live on disk (or S3) — this row points at them.
+/// Deleting a User cascades; deleting an Upload row is the entry point
+/// for garbage collection of the stored bytes.
+model Upload {
+  id           String     @id @default(cuid())
+  userId       String     @map("user_id")
+  kind         UploadKind
+  originalName String     @map("original_name")
+  mimeType     String     @map("mime_type")
+  sizeBytes    Int        @map("size_bytes")
+  /// Storage-backend-relative key: `<userId>/<kind>/<filename>` on disk,
+  /// or the S3 key once we cut over. Always relative — the URL is built
+  /// at read time so we can swap public CDN bases without a backfill.
+  storageKey   String     @unique @map("storage_key")
+  url          String
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, kind])
+  @@map("uploads")
+}
+
+/// A student's application to a gig. Links a User (applicant) to a Gig.
+/// Application lifecycle: pending → reviewing → accepted | rejected.
+enum ApplicationStatus {
+  pending
+  reviewing
+  accepted
+  rejected
+}
+
+model Application {
+  id        String            @id @default(cuid())
+  userId    String            @map("user_id")
+  gigId     String            @map("gig_id")
+  status    ApplicationStatus @default(pending)
+  coverNote String?           @map("cover_note")
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gig       Gig               @relation(fields: [gigId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gigId])
+  @@index([userId])
+  @@index([gigId])
+  @@map("applications")
+}

@@ -1,0 +1,38 @@
+<!-- @dsCard group="Brand" viewport="700x240" name="Logo & Wordmark" subtitle="Mark, full lockup, wordmark, and usage on dark" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; font-family: var(--font-text); background: var(--surface-0); padding: 0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .cell { padding: 24px 28px; display: flex; align-items: center; gap: 18px; border-right: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+  .cell.dark { background: var(--brand-700); border-color: var(--brand-600); }
+  .mark { width: 56px; height: 56px; }
+  .wm { font-family: var(--font-display); font-weight: 700; font-size: 28px; letter-spacing: -0.01em; color: var(--brand-700); }
+  .wm.on-dark { color: #fff; }
+  .cap { font-size: 11px; color: var(--text-subtle); }
+  .cap.on-dark { color: var(--brand-200); }
+  .stack { display:flex; flex-direction:column; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="cell">
+      <img class="mark" src="../assets/aavasar-mark.png" alt="Aavasar mark">
+      <div class="stack"><span class="wm">Aavasar</span><span class="cap">Mark + wordmark · Plus Jakarta Bold</span></div>
+    </div>
+    <div class="cell dark">
+      <img class="mark" src="../assets/aavasar-mark.png" alt="Aavasar mark" style="background:#fff;border-radius:50%">
+      <div class="stack"><span class="wm on-dark">Aavasar</span><span class="cap on-dark">On brand slate · mark sits on white</span></div>
+    </div>
+    <div class="cell" style="border-bottom:0">
+      <img src="../assets/aavasar-logo.png" alt="Aavasar full lockup" style="height:54px">
+    </div>
+    <div class="cell" style="border-right:0;border-bottom:0">
+      <div class="stack"><span class="wm" style="font-size:22px">जता सीप, त्यता अवसर</span><span class="cap">Tagline — "Where there's skill, there's opportunity"</span></div>
+    </div>
+  </div>
+</body>
+</html>

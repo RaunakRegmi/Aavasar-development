@@ -1,0 +1,79 @@
+import type { ChangeEvent, CSSProperties, ReactNode } from "react";
+
+export interface CheckboxProps {
+  checked: boolean;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  label?: ReactNode;
+  id?: string;
+  style?: CSSProperties;
+  disabled?: boolean;
+}
+
+export function Checkbox({ checked, onChange, label, id, style, disabled = false }: CheckboxProps) {
+  const cbId =
+    id ??
+    (typeof label === "string"
+      ? label.toLowerCase().replace(/\s+/g, "-").slice(0, 24)
+      : undefined);
+  return (
+    <label
+      htmlFor={cbId}
+      style={{
+        display: "inline-flex",
+        alignItems: "flex-start",
+        gap: 10,
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.6 : 1,
+        ...style,
+      }}
+    >
+      <span
+        style={{
+          flexShrink: 0,
+          width: 20,
+          height: 20,
+          marginTop: 1,
+          borderRadius: "var(--radius-xs)",
+          border: `1.5px solid ${checked ? "var(--brand-700)" : "var(--border-strong)"}`,
+          background: checked ? "var(--brand-700)" : "var(--surface-0)",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "background var(--dur-fast), border-color var(--dur-fast)",
+        }}
+      >
+        {checked && (
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path
+              d="M2.5 6.2L4.8 8.5L9.5 3.5"
+              stroke="#fff"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+      </span>
+      <input
+        id={cbId}
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        disabled={disabled}
+        style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
+      />
+      {label && (
+        <span
+          style={{
+            fontFamily: "var(--font-text)",
+            fontSize: 14,
+            lineHeight: 1.5,
+            color: "var(--text-body)",
+          }}
+        >
+          {label}
+        </span>
+      )}
+    </label>
+  );
+}
