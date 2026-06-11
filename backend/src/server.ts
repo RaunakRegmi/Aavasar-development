@@ -14,9 +14,13 @@ import { env } from "@config/env";
 import { logger } from "@config/logger";
 import { prisma } from "@config/prisma";
 import { makeApp } from "@/app";
+import { attachWebSocketServer } from "@lib/ws";
 
 const app = makeApp();
 const server = createServer(app);
+
+// Live messaging — shares the HTTP server (clients connect to /ws).
+attachWebSocketServer(server);
 
 server.listen(env.port, () => {
   logger.info(

@@ -19,6 +19,36 @@ export class ApplicationRepository {
     });
   }
 
+  /** Owner of a gig — used to authorize recruiter access to applicants. */
+  findGigOwner(gigId: string) {
+    return this.db.gig.findUnique({
+      where: { id: gigId },
+      select: { id: true, postedByUserId: true, title: true },
+    });
+  }
+
+  /** Application + full applicant profile + gig, for the detail page. */
+  findByIdWithApplicant(id: string) {
+    return this.db.application.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            avatarUrl: true,
+            bannerUrl: true,
+            headline: true,
+            bio: true,
+            skills: true,
+            verified: true,
+          },
+        },
+        gig: { select: { id: true, title: true, postedByUserId: true } },
+      },
+    });
+  }
+
   findByUserAndGig(userId: string, gigId: string) {
     return this.db.application.findUnique({
       where: { userId_gigId: { userId, gigId } },
@@ -56,7 +86,16 @@ export class ApplicationRepository {
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
-          user: { select: { id: true, fullName: true, avatarUrl: true, headline: true } },
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              avatarUrl: true,
+              headline: true,
+              skills: true,
+              verified: true,
+            },
+          },
         },
       }),
       this.db.application.count({ where }),

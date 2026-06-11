@@ -8,7 +8,7 @@
  * invalidates this key on success so the dashboard updates.
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useIsAuthenticated, useUpdateProfile } from "@features/auth";
+import { useAuthStore, useIsAuthenticated, useUpdateProfile } from "@features/auth";
 import type { UpdateProfileRequest } from "@features/auth";
 import { getMe } from "../application/getMe.usecase";
 
@@ -23,10 +23,13 @@ export const meQueryKeys = {
  */
 export function useMe() {
   const authed = useIsAuthenticated();
+  // Only fetch once a token actually exists, so /me can never fire
+  // before the bearer header is attachable (avoids "Missing bearer token").
+  const hasToken = useAuthStore((s) => !!s.session?.accessToken);
   return useQuery({
     queryKey: meQueryKeys.all,
     queryFn: getMe,
-    enabled: authed,
+    enabled: authed && hasToken,
     staleTime: 30_000,
   });
 }

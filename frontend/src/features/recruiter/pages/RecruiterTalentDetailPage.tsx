@@ -7,13 +7,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Avatar, Badge, Button, Card, Tag, Skeleton, useToast } from "@shared/ui";
 import { Icon } from "@shared/icons";
 import { useTalentById } from "@features/recruiter/hooks/useTalent";
+import { useStartConversation } from "@features/messaging";
 import { resolveImageUrl } from "@shared/lib/resolveImageUrl";
-import { routes } from "@shared/config/routes";
+import { routes, recruiterConversationPath } from "@shared/config/routes";
 
 export default function RecruiterTalentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const toast = useToast();
+  const startConversation = useStartConversation();
   const { data: talent, isLoading, isError } = useTalentById(id);
 
   const banner = resolveImageUrl(talent?.bannerUrl ?? undefined);
@@ -121,9 +123,14 @@ export default function RecruiterTalentDetailPage() {
               <Button
                 variant="primary"
                 iconLeft={<Icon name="Mail" size={16} />}
+                disabled={startConversation.isPending}
                 onClick={() =>
-                  toast.info("Messaging is coming soon", {
-                    description: "Direct messaging with students will be available shortly.",
+                  startConversation.mutate(talent.id, {
+                    onSuccess: (conv) => navigate(recruiterConversationPath(conv.id)),
+                    onError: (e) =>
+                      toast.error("Could not start chat", {
+                        description: e instanceof Error ? e.message : undefined,
+                      }),
                   })
                 }
               >

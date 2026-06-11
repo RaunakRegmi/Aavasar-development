@@ -12,7 +12,8 @@ import { Button, Card, Chip, Input, Skeleton, useToast } from "@shared/ui";
 import { Icon } from "@shared/icons";
 import { useTalentList } from "@features/recruiter/hooks/useTalent";
 import { TalentCard } from "@features/recruiter/components/TalentCard";
-import { talentPath } from "@shared/config/routes";
+import { useStartConversation } from "@features/messaging";
+import { talentPath, recruiterConversationPath } from "@shared/config/routes";
 
 const PAGE_SIZE = 12;
 
@@ -44,6 +45,7 @@ export default function BrowseTalentPage() {
     [page, debouncedSearch, skills],
   );
 
+  const startConversation = useStartConversation();
   const { data, isLoading, isFetching, isError, refetch } = useTalentList(filters);
   const talents = data?.items ?? [];
   const total = data?.total ?? 0;
@@ -200,9 +202,13 @@ export default function BrowseTalentPage() {
                 key={t.id}
                 talent={t}
                 onViewProfile={(id) => navigate(talentPath(id))}
-                onMessage={() =>
-                  toast.info("Messaging is coming soon", {
-                    description: "Direct messaging with students will be available shortly.",
+                onMessage={(id) =>
+                  startConversation.mutate(id, {
+                    onSuccess: (conv) => navigate(recruiterConversationPath(conv.id)),
+                    onError: (e) =>
+                      toast.error("Could not start chat", {
+                        description: e instanceof Error ? e.message : undefined,
+                      }),
                   })
                 }
               />

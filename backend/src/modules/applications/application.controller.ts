@@ -26,13 +26,19 @@ export class ApplicationController {
     if (!req.user) throw new UnauthorizedError();
     const page = parseInt(req.query.page as string) || 1;
     const pageSize = parseInt(req.query.pageSize as string) || 20;
-    const result = await this.service.listForGig(req.user.id, req.params.gigId, page, pageSize);
+    const result = await this.service.listForGig(req.user, req.params.gigId, page, pageSize);
     okList(res, result.items, { page: result.page, pageSize: result.pageSize, total: result.total });
+  };
+
+  getApplicant = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) throw new UnauthorizedError();
+    const detail = await this.service.getApplicantDetail(req.user, req.params.id);
+    ok(res, detail);
   };
 
   updateStatus = async (req: Request, res: Response): Promise<void> => {
     if (!req.user) throw new UnauthorizedError();
-    const updated = await this.service.updateStatus(req.user.id, req.params.id, req.body.status);
+    const updated = await this.service.updateStatus(req.user, req.params.id, req.body.status);
     ok(res, updated);
   };
 }

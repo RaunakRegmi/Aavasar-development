@@ -44,6 +44,10 @@ import { NotificationController } from "@modules/notifications/notification.cont
 import { TalentService } from "@modules/users/talent.service";
 import { TalentController } from "@modules/users/talent.controller";
 
+import { MessageRepository } from "@modules/messaging/message.repository";
+import { MessageService } from "@modules/messaging/message.service";
+import { MessageController } from "@modules/messaging/message.controller";
+
 export interface Container {
   db: PrismaClient;
   userRepo: UserRepository;
@@ -72,6 +76,10 @@ export interface Container {
   companyController: CompanyController;
   talentController: TalentController;
   notificationController: NotificationController;
+
+  messageRepo: MessageRepository;
+  messageService: MessageService;
+  messageController: MessageController;
 }
 
 export type ContainerOverrides = Partial<Container>;
@@ -106,10 +114,16 @@ export function makeContainer(overrides: ContainerOverrides = {}): Container {
   const talentController = overrides.talentController ?? new TalentController(talentService);
   const notificationController = overrides.notificationController ?? new NotificationController(notificationService);
 
+  const messageRepo = overrides.messageRepo ?? new MessageRepository(db);
+  const messageService =
+    overrides.messageService ?? new MessageService(messageRepo, userRepo, notificationService);
+  const messageController = overrides.messageController ?? new MessageController(messageService);
+
   return {
     db,
     userRepo, authRepo, gigRepo, uploadRepo, meRepo, appRepo, companyRepo, notificationRepo,
     notificationService, authService, gigService, uploadService, meService, appService, companyService, talentService,
     authController, gigController, uploadController, meController, appController, companyController, talentController, notificationController,
+    messageRepo, messageService, messageController,
   };
 }

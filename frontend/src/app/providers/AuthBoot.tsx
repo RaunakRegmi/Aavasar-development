@@ -17,6 +17,30 @@ import { useToast } from "@shared/ui";
 import { useQueryClient } from "@tanstack/react-query";
 
 /**
+ * Wire the transport's auth concerns at MODULE LOAD — i.e. the moment this
+ * module is imported, before any component renders or any query fires.
+ *
+ * This is critical: the auth store rehydrates synchronously, so an authed
+ * page's `/me` query is `enabled` and fires on first paint. If the token
+ * provider were only registered inside a `useEffect` (which runs AFTER
+ * children mount), that first request would go out with the default
+ * `getToken = () => null` → no `Authorization` header → "Missing bearer
+ * token", and the refresh interceptor wouldn't be installed yet to recover.
+ */
+registerTokenProvider(selectAccessToken);
+
+/**
+ * The auto-logout behavior is enriched (clear query cache + toast) once
+ * React mounts via AuthBoot's effect. Until then a store-only clear is the
+ * safe default. We reassign this variable rather than re-installing the
+ * interceptor, so `wireRefresh` is called exactly once (at module load).
+ */
+let onAuthFailure: () => void = () => {
+  useAuthStore.getState().clear();
+};
+wireRefresh(refreshSession, () => onAuthFailure());
+
+/**
  * One-time wiring of cross-cutting concerns into the L5 transport:
  *
  *   1. Token provider — interceptor reads the latest access token.
@@ -39,24 +63,40 @@ export function AuthBoot({ children }: { children: ReactNode }) {
     if (wiredRef.current) return;
     wiredRef.current = true;
 
-    // (1) tokens
-    registerTokenProvider(selectAccessToken);
-
-    // (4) boot-time session sweep — runs before any query fires
-    if (useAuthStore.getState().clearIfExpired()) {
-      toast.info("Your session expired", {
-        description: "Please sign in again to continue.",
-      });
-    }
-
-    // (2) refresh / auto-logout
-    wireRefresh(refreshSession, () => {
+    // (1+2) Token provider + refresh interceptor are already wired at module
+    //       load (see top of file). Here we just enrich the logout handler
+    //       now that the query client + toast are available.
+    onAuthFailure = () => {
       useAuthStore.getState().clear();
       qc.clear();
       toast.error("Signed out", {
         description: "Your session ended. Please log in to continue.",
       });
-    });
+    };
+
+    // (4) boot-time recovery — if a persisted access token is already
+    //     expired, DON'T log the user out. Exchange the refresh token for
+    //     a fresh session instead. refreshSession() self-heals: it sets a
+    //     new session on success and clears only when the refresh token is
+    //     missing/expired/rejected. This is what keeps a page reload from
+    //     kicking the user out.
+    const booted = useAuthStore.getState().session;
+    if (booted && isSessionExpired()) {
+      if (booted.refreshToken) {
+        void refreshSession().then((token) => {
+          if (!token) {
+            toast.info("Your session expired", {
+              description: "Please sign in again to continue.",
+            });
+          }
+        });
+      } else {
+        useAuthStore.getState().clear();
+        toast.info("Your session expired", {
+          description: "Please sign in again to continue.",
+        });
+      }
+    }
 
     // (3) global query-error reporter — surfaces background fetch failures
     //     that no page is actively awaiting. Mutations have page-level
@@ -69,15 +109,24 @@ export function AuthBoot({ children }: { children: ReactNode }) {
       reportTransportError(err, toast);
     });
 
-    // (5) expiry watchdog — clear automatically while the tab is open
+    // (5) keep-alive watchdog — proactively refresh shortly before the
+    //     access token expires so an open tab is never kicked out
+    //     mid-session. Only fall back to a clean logout when there's no
+    //     refresh token to renew with.
     const interval = window.setInterval(() => {
-      if (isSessionExpired()) {
+      const sess = useAuthStore.getState().session;
+      if (!sess) return;
+      const msLeft = Date.parse(sess.expiresAt) - Date.now();
+      if (msLeft > 60_000) return; // not near expiry yet
+      if (sess.refreshToken) {
+        void refreshSession();
+      } else {
         useAuthStore.getState().clear();
         toast.info("Your session expired", {
           description: "Sign in again to keep working.",
         });
       }
-    }, 60_000);
+    }, 30_000);
 
     return () => {
       unsubQueries();

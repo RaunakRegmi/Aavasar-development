@@ -42,6 +42,7 @@ import { makeApplicationRouter } from "@modules/applications/application.routes"
 import { makeCompanyRouter } from "@modules/companies/company.routes";
 import { makeTalentRouter } from "@modules/users/talent.routes";
 import { makeNotificationRouter } from "@modules/notifications/notification.routes";
+import { makeMessageRouter } from "@modules/messaging/message.routes";
 import { makeContainer, type Container } from "@container/index";
 
 export function makeApp(container: Container = makeContainer()): Express {
@@ -123,6 +124,7 @@ export function makeApp(container: Container = makeContainer()): Express {
   app.use(`${env.apiBasePath}/companies`, makeCompanyRouter(container.companyController));
   app.use(`${env.apiBasePath}/talent`, makeTalentRouter(container.talentController));
   app.use(`${env.apiBasePath}/notifications`, makeNotificationRouter(container.notificationController));
+  app.use(`${env.apiBasePath}/conversations`, makeMessageRouter(container.messageController));
 
   // (10) 404
   app.use(notFound);

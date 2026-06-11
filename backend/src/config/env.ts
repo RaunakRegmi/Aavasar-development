@@ -21,6 +21,12 @@ const RawEnvSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(32, "Use at least 32 bytes of entropy for JWT_REFRESH_SECRET"),
   JWT_ACCESS_TTL_SECONDS: z.coerce.number().int().positive().default(900),
   JWT_REFRESH_TTL_SECONDS: z.coerce.number().int().positive().default(2_592_000),
+  // "Remember me" → effectively forever (sliding window, rotated on each
+  // refresh). Default ~10 years.
+  JWT_REFRESH_TTL_REMEMBER_SECONDS: z.coerce.number().int().positive().default(315_360_000),
+  // "Remember me" unchecked → short-lived session token (1 day). The
+  // frontend also drops it on tab close (sessionStorage).
+  JWT_REFRESH_TTL_SESSION_SECONDS: z.coerce.number().int().positive().default(86_400),
 
   FRONTEND_ORIGIN: z.string().url(),
   OAUTH_SUCCESS_REDIRECT: z.string().url(),
@@ -72,6 +78,8 @@ export const env = {
     refreshSecret: raw.JWT_REFRESH_SECRET,
     accessTtlSeconds: raw.JWT_ACCESS_TTL_SECONDS,
     refreshTtlSeconds: raw.JWT_REFRESH_TTL_SECONDS,
+    refreshTtlRememberSeconds: raw.JWT_REFRESH_TTL_REMEMBER_SECONDS,
+    refreshTtlSessionSeconds: raw.JWT_REFRESH_TTL_SESSION_SECONDS,
   },
 
   frontendOrigin: raw.FRONTEND_ORIGIN,

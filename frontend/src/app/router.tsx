@@ -25,8 +25,11 @@ const RecruiterProfilePage = lazy(() => import("@features/profile/pages/Recruite
 const CompanyRegistrationPage = lazy(() => import("@features/recruiter/pages/CompanyRegistrationPage"));
 const PostGigPage = lazy(() => import("@features/recruiter/pages/PostGigPage"));
 const RecruiterMyGigsPage = lazy(() => import("@features/recruiter/pages/RecruiterMyGigsPage"));
+const RecruiterApplicantsPage = lazy(() => import("@features/recruiter/pages/RecruiterApplicantsPage"));
 const RecruiterTalentDetailPage = lazy(() => import("@features/recruiter/pages/RecruiterTalentDetailPage"));
 const ApplicantDetailPage = lazy(() => import("@pages/recruiter/ApplicantDetailPage"));
+const MessagesPage = lazy(() => import("@features/messaging/pages/MessagesPage"));
+const StudentMyGigsPage = lazy(() => import("@pages/student/StudentMyGigsPage"));
 const ComingSoonPage = lazy(() => import("@pages/ComingSoonPage"));
 const AuthCallbackPage = lazy(() => import("@pages/auth/AuthCallbackPage"));
 
@@ -91,8 +94,9 @@ const router = createBrowserRouter([
           { path: routes.studentDashboard, element: withSuspense(<StudentDashboardPage />) },
           { path: routes.studentFindWork, element: withSuspense(<StudentFindWorkPage />) },
           { path: routes.studentGigDetail, element: withSuspense(<StudentGigDetailPage />) },
-          { path: routes.studentMyGigs, element: stub("My Gigs", "Your active and past gigs will live here.") },
-          { path: routes.studentMessages, element: stub("Messages", "Inbox + chat threads coming soon.") },
+          { path: routes.studentMyGigs, element: withSuspense(<StudentMyGigsPage />) },
+          { path: routes.studentMessages, element: withSuspense(<MessagesPage />) },
+          { path: routes.studentMessageThread, element: withSuspense(<MessagesPage />) },
           { path: routes.studentLearning, element: stub("Learning", "Your course progress and recommended tracks.") },
           { path: routes.studentProfile, element: withSuspense(<StudentProfilePage />) },
           { path: routes.studentProfileEdit, element: withSuspense(<StudentProfilePage />) },
@@ -115,10 +119,11 @@ const router = createBrowserRouter([
           { path: routes.recruiterDashboard, element: withSuspense(<RecruiterDashboardPage />) },
           { path: routes.recruiterCompanyRegistration, element: withSuspense(<CompanyRegistrationPage />) },
           { path: routes.recruiterBrowseTalent, element: withSuspense(<BrowseTalentPage />) },
-          { path: routes.recruiterApplicants, element: stub("Applicants", "Pipeline + filters + applicant detail will live here.") },
+          { path: routes.recruiterApplicants, element: withSuspense(<RecruiterApplicantsPage />) },
           { path: "/recruiter/applicants/:id", element: withSuspense(<ApplicantDetailPage />) },
           { path: routes.recruiterPostGig, element: withSuspense(<PostGigPage />) },
-          { path: routes.recruiterMessages, element: stub("Messages") },
+          { path: routes.recruiterMessages, element: withSuspense(<MessagesPage />) },
+          { path: routes.recruiterMessageThread, element: withSuspense(<MessagesPage />) },
           { path: routes.recruiterSettings, element: withSuspense(<RecruiterProfilePage />) },
           { path: routes.recruiterMyGigs, element: withSuspense(<RecruiterMyGigsPage />) },
           { path: routes.recruiterTalentDetail, element: withSuspense(<RecruiterTalentDetailPage />) },

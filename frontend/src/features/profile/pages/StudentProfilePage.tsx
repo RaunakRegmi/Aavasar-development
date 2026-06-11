@@ -525,7 +525,7 @@ export default function StudentProfilePage() {
                             color: "var(--text-subtle)",
                           }}
                         >
-                          {a.gig.company.name}
+                          {a.gig.company?.name ?? "Individual recruiter"}
                         </div>
                       </div>
                       <Badge

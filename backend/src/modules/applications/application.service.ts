@@ -2,6 +2,8 @@ import { ForbiddenError, ConflictError, NotFoundError } from "@lib/errors";
 import type { AuthedUser } from "@middlewares/auth";
 import { ApplicationRepository } from "./application.repository";
 import type {
+  Applicant,
+  ApplicantDetail,
   CreateApplicationRequest,
   GigApplication,
   ListMyApplicationsQuery,
@@ -51,22 +53,54 @@ export class ApplicationService {
   }
 
   async listForGig(
-    _recruiterId: string,
+    actor: AuthedUser,
     gigId: string,
     page: number,
     pageSize: number,
-  ) {
-    const [items, total] = await this.repo.listForGig(gigId, page, pageSize);
+  ): Promise<{ items: Applicant[]; total: number; page: number; pageSize: number }> {
+    await this.assertOwnsGig(actor, gigId);
+    const [rows, total] = await this.repo.listForGig(gigId, page, pageSize);
+    const items = (rows as any[]).map((r) => this.toApplicant(r));
     return { items, total, page, pageSize };
   }
 
+  /** Single applicant detail (full student profile) for the recruiter. */
+  async getApplicantDetail(actor: AuthedUser, applicationId: string): Promise<ApplicantDetail> {
+    const row = await this.repo.findByIdWithApplicant(applicationId);
+    if (!row) throw new NotFoundError("Applicant not found.");
+    if (actor.role !== "admin" && (row as any).gig.postedByUserId !== actor.id) {
+      throw new ForbiddenError("You can only view applicants for gigs you posted.");
+    }
+    const u = (row as any).user;
+    return {
+      id: row.id,
+      status: row.status as ApplicantDetail["status"],
+      coverNote: row.coverNote ?? null,
+      createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : (row.createdAt as any),
+      gig: { id: (row as any).gig.id, title: (row as any).gig.title },
+      applicant: {
+        id: u.id,
+        fullName: u.fullName,
+        avatarUrl: u.avatarUrl ?? null,
+        bannerUrl: u.bannerUrl ?? null,
+        headline: u.headline ?? null,
+        bio: u.bio ?? null,
+        skills: u.skills ?? [],
+        verified: u.verified,
+      },
+    };
+  }
+
   async updateStatus(
-    _recruiterId: string,
+    actor: AuthedUser,
     applicationId: string,
     status: any,
   ): Promise<GigApplication> {
     const app = await this.repo.findById(applicationId);
     if (!app) throw new NotFoundError("Application not found.");
+    if (actor.role !== "admin" && (app as any).gig?.postedByUserId !== actor.id) {
+      throw new ForbiddenError("You can only update applicants for gigs you posted.");
+    }
     const row = await this.repo.updateStatus(applicationId, status);
     // Trigger notification for the student
     const statusLabel = status === "accepted" ? "accepted" : "rejected";
@@ -80,6 +114,32 @@ export class ApplicationService {
     return this.toDto(row);
   }
 
+  /** Authorize a recruiter (or admin) to act on a gig's applicants. */
+  private async assertOwnsGig(actor: AuthedUser, gigId: string): Promise<void> {
+    const gig = await this.repo.findGigOwner(gigId);
+    if (!gig) throw new NotFoundError("Gig not found.");
+    if (actor.role !== "admin" && gig.postedByUserId !== actor.id) {
+      throw new ForbiddenError("You can only view applicants for gigs you posted.");
+    }
+  }
+
+  private toApplicant(row: any): Applicant {
+    return {
+      id: row.id,
+      status: row.status,
+      coverNote: row.coverNote ?? null,
+      createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : row.createdAt,
+      applicant: {
+        id: row.user.id,
+        fullName: row.user.fullName,
+        avatarUrl: row.user.avatarUrl ?? null,
+        headline: row.user.headline ?? null,
+        skills: row.user.skills ?? [],
+        verified: row.user.verified,
+      },
+    };
+  }
+
   private toDto(row: any): GigApplication {
     return {
       id: row.id,
@@ -91,7 +151,7 @@ export class ApplicationService {
         id: row.gig.id,
         title: row.gig.title,
         category: row.gig.category,
-        company: row.gig.company,
+        company: row.gig.company ?? null,
         location: row.gig.location,
         duration: row.gig.duration,
         payKind: row.gig.payKind,

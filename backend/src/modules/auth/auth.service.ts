@@ -124,14 +124,24 @@ export class AuthService {
       throw new UnauthorizedError("Session ended by a security event.");
     }
 
-    // Rotate.
+    // Rotate — preserve the original "remember" window so a remembered
+    // session keeps its long TTL on every refresh (sliding window).
+    // Tokens issued before this claim existed default to remembered.
+    const remember = claims.remember ?? true;
+    const rotateTtl = remember
+      ? env.jwt.refreshTtlRememberSeconds
+      : env.jwt.refreshTtlSessionSeconds;
     const newId = crypto.randomUUID();
-    const newRefreshToken = signRefreshToken({
-      sub: user.id,
-      jti: newId,
-      tokenVersion: user.tokenVersion,
-    });
-    const newExpiresAt = new Date(Date.now() + env.jwt.refreshTtlSeconds * 1000);
+    const newRefreshToken = signRefreshToken(
+      {
+        sub: user.id,
+        jti: newId,
+        tokenVersion: user.tokenVersion,
+        remember,
+      },
+      rotateTtl,
+    );
+    const newExpiresAt = new Date(Date.now() + rotateTtl * 1000);
 
     await this.authRepo.rotateRefreshToken({
       oldId: record.id,
@@ -341,11 +351,13 @@ export class AuthService {
   ): Promise<AuthSessionDto> {
     const accessToken = signAccessToken({ sub: userId, role, email });
     const jti = crypto.randomUUID();
-    // When "Remember me" is unchecked, use a shorter 1-day refresh TTL
-    // instead of the default 30-day window.
-    const refreshTtl = remember ? env.jwt.refreshTtlSeconds : 86_400;
+    // "Remember me" → effectively-forever sliding window; unchecked → a
+    // short session token that the frontend also drops on tab close.
+    const refreshTtl = remember
+      ? env.jwt.refreshTtlRememberSeconds
+      : env.jwt.refreshTtlSessionSeconds;
     const refreshToken = signRefreshToken(
-      { sub: userId, jti, tokenVersion },
+      { sub: userId, jti, tokenVersion, remember },
       refreshTtl,
     );
     const refreshExpiresAt = new Date(Date.now() + refreshTtl * 1000);

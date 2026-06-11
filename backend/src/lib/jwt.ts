@@ -19,6 +19,8 @@ export interface RefreshTokenClaims extends JwtPayload {
   sub: string;          // user id
   jti: string;          // matches the DB row's id
   tokenVersion: number; // user.tokenVersion at issue time
+  /** "Remember me" — preserved across rotation so the long TTL persists. */
+  remember?: boolean;
 }
 
 const ACCESS_OPTS: SignOptions = {

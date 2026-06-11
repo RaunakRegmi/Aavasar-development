@@ -9,7 +9,9 @@ import { z } from "zod";
 
 export const PaginationSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
-  pageSize: z.coerce.number().int().min(1).max(50).default(20),
+  // Cap raised to 200 so "load the whole set" surfaces (a chat thread's
+  // messages, a gig's applicants) aren't rejected. Still a safety bound.
+  pageSize: z.coerce.number().int().min(1).max(200).default(20),
 });
 export type Pagination = z.infer<typeof PaginationSchema>;
 

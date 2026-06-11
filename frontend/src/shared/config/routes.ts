@@ -44,6 +44,7 @@ export const routes = {
   studentGigDetail: "/student/gigs/:id",
   studentMyGigs: "/student/my-gigs",
   studentMessages: "/student/messages",
+  studentMessageThread: "/student/messages/:conversationId",
   studentLearning: "/student/learning",
   studentProfile: "/student/profile",                //                       TODO STUB
   studentProfileEdit: "/student/profile/edit",       //                       TODO STUB
@@ -60,6 +61,7 @@ export const routes = {
   recruiterApplicants: "/recruiter/applicants",
   recruiterPostGig: "/recruiter/post-gig",
   recruiterMessages: "/recruiter/messages",
+  recruiterMessageThread: "/recruiter/messages/:conversationId",
   recruiterSettings: "/recruiter/settings",
   recruiterMyGigs: "/recruiter/my-gigs",
   recruiterResources: "/recruiter/resources",         //                      TODO STUB
@@ -88,4 +90,12 @@ export function applicantPath(id: string): string {
 /** Helper for building a recruiter-facing talent (student) detail path. */
 export function talentPath(id: string): string {
   return `/recruiter/talent/${encodeURIComponent(id)}`;
+}
+
+/** Helpers for opening a specific conversation thread. */
+export function recruiterConversationPath(conversationId: string): string {
+  return `/recruiter/messages/${encodeURIComponent(conversationId)}`;
+}
+export function studentConversationPath(conversationId: string): string {
+  return `/student/messages/${encodeURIComponent(conversationId)}`;
 }

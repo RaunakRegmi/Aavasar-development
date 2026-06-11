@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { QueryProvider } from "./QueryProvider";
 import { AuthBoot } from "./AuthBoot";
 import { ToastProvider } from "@shared/ui";
+import { MessagingProvider } from "@features/messaging";
 
 /**
  * Composition root. Order matters:
@@ -17,7 +18,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryProvider>
       <ToastProvider>
-        <AuthBoot>{children}</AuthBoot>
+        <AuthBoot>
+          <MessagingProvider>{children}</MessagingProvider>
+        </AuthBoot>
       </ToastProvider>
     </QueryProvider>
   );
