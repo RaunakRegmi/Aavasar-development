@@ -39,8 +39,12 @@ export function signAccessToken(claims: Omit<AccessTokenClaims, "iat" | "exp">):
   return jwt.sign(claims, env.jwt.accessSecret, ACCESS_OPTS);
 }
 
-export function signRefreshToken(claims: Omit<RefreshTokenClaims, "iat" | "exp">): string {
-  return jwt.sign(claims, env.jwt.refreshSecret, REFRESH_OPTS);
+export function signRefreshToken(claims: Omit<RefreshTokenClaims, "iat" | "exp">, ttlSeconds?: number): string {
+  const opts: SignOptions = {
+    ...REFRESH_OPTS,
+    ...(ttlSeconds !== undefined ? { expiresIn: ttlSeconds } : {}),
+  };
+  return jwt.sign(claims, env.jwt.refreshSecret, opts);
 }
 
 export function verifyAccessToken(token: string): AccessTokenClaims {

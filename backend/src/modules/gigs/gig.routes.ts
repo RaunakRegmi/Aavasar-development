@@ -12,8 +12,10 @@
  */
 import { Router } from "express";
 import { validate } from "@middlewares/validate";
-import { requireAuth, requireRole } from "@middlewares/auth";
+import { requireAuth, requireRecruiter, requireRole } from "@middlewares/auth";
+import { validateCompanyOwnership } from "@middlewares/company";
 import { asyncHandler } from "@lib/async";
+import { PaginationSchema } from "@lib/pagination";
 import {
   CreateGigRequestSchema,
   GigIdParamsSchema,
@@ -33,6 +35,16 @@ export function makeGigRouter(controller: GigController): Router {
 
   router.get("/featured", asyncHandler(controller.featured));
 
+  // Recruiter's own gigs (all statuses). MUST precede "/:id" so the
+  // literal "mine" segment isn't captured as a gig id.
+  router.get(
+    "/mine",
+    requireAuth,
+    requireRecruiter,
+    validate({ query: PaginationSchema }),
+    asyncHandler(controller.mine),
+  );
+
   router.get(
     "/:id",
     validate({ params: GigIdParamsSchema }),
@@ -42,7 +54,8 @@ export function makeGigRouter(controller: GigController): Router {
   router.post(
     "/",
     requireAuth,
-    requireRole("recruiter", "admin"),
+    requireRecruiter,
+    validateCompanyOwnership(),
     validate({ body: CreateGigRequestSchema }),
     asyncHandler(controller.create),
   );
@@ -50,7 +63,7 @@ export function makeGigRouter(controller: GigController): Router {
   router.patch(
     "/:id",
     requireAuth,
-    requireRole("recruiter", "admin"),
+    requireRecruiter,
     validate({ params: GigIdParamsSchema, body: UpdateGigRequestSchema }),
     asyncHandler(controller.update),
   );

@@ -446,7 +446,7 @@ export function StepPortfolio({ onNext, onBack }: StepPortfolioProps) {
         ) : (
           <div
             style={{
-              border: "2px dashed var(--border-strong)",
+              border: `2px dashed ${errors.portfolioUrl ? "var(--danger-500)" : "var(--border-strong)"}`,
               borderRadius: "var(--radius-md)",
               padding: "40px 24px",
               textAlign: "center",
@@ -483,10 +483,22 @@ export function StepPortfolio({ onNext, onBack }: StepPortfolioProps) {
                 fontFamily: "var(--font-text)",
                 fontSize: 14,
                 color: "var(--text-muted)",
+                marginBottom: errors.portfolioUrl ? 4 : 0,
               }}
             >
               {UPLOAD_LIMITS.portfolio.label}
             </div>
+            {errors.portfolioUrl && (
+              <span
+                style={{
+                  fontFamily: "var(--font-text)",
+                  fontSize: 13,
+                  color: "var(--danger-500)",
+                }}
+              >
+                {errors.portfolioUrl.message}
+              </span>
+            )}
           </div>
         )}
       </Card>
@@ -602,7 +614,7 @@ export function StepPortfolio({ onNext, onBack }: StepPortfolioProps) {
         ) : (
           <div
             style={{
-              border: "2px dashed var(--border-strong)",
+              border: `2px dashed ${errors.nidUrl ? "var(--danger-500)" : "var(--border-strong)"}`,
               borderRadius: "var(--radius-md)",
               padding: "32px 24px",
               textAlign: "center",
@@ -625,10 +637,22 @@ export function StepPortfolio({ onNext, onBack }: StepPortfolioProps) {
                 fontFamily: "var(--font-text)",
                 fontSize: 13,
                 color: "var(--text-muted)",
+                marginBottom: errors.nidUrl ? 4 : 0,
               }}
             >
               {UPLOAD_LIMITS.nid.label}
             </div>
+            {errors.nidUrl && (
+              <span
+                style={{
+                  fontFamily: "var(--font-text)",
+                  fontSize: 13,
+                  color: "var(--danger-500)",
+                }}
+              >
+                {errors.nidUrl.message}
+              </span>
+            )}
           </div>
         )}
       </Card>

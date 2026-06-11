@@ -27,6 +27,7 @@ import {
 } from "@lib/errors";
 import { env } from "@config/env";
 import { logger } from "@config/logger";
+import { email } from "@lib/email";
 import { toSessionUser, type SessionUserDto } from "@modules/users/user.mapper";
 import { UserRepository } from "@modules/users/user.repository";
 import { AuthRepository } from "./auth.repository";
@@ -83,7 +84,7 @@ export class AuthService {
     const ok = await verifyPassword(input.password, user.passwordHash);
     if (!ok) throw new UnauthorizedError("Email or password is incorrect.");
 
-    return this.issueSession(user.id, user.role, user.email, user.tokenVersion, user);
+    return this.issueSession(user.id, user.role, user.email, user.tokenVersion, user, input.remember);
   }
 
   // ---------- Refresh ----------
@@ -184,10 +185,32 @@ export class AuthService {
    *
    * Caller is identified by `userId` — the controller resolves it from
    * the bearer token, so a user can only patch themselves.
+   *
+   * Precondition: when `onboardingCompleted` is being set to `true` the
+   * user MUST already have a non-empty `headline` and at least one
+   * `skill`. The Zod schema on the wire already requires these in the
+   * same request; this check also covers the case where a rogue caller
+   * sends `onboardingCompleted: true` with nothing else.
    */
   async updateProfile(userId: string, patch: UpdateProfileRequest): Promise<SessionUserDto> {
     const user = await this.users.findById(userId);
     if (!user) throw new NotFoundError("User no longer exists.");
+
+    if (patch.onboardingCompleted === true) {
+      const resolvedHeadline = patch.headline ?? user.headline;
+      const resolvedSkills = patch.skills ?? user.skills;
+      if (!resolvedHeadline || !resolvedSkills || resolvedSkills.length === 0) {
+        throw new ValidationError(
+          {
+            onboardingCompleted: [
+              "To complete onboarding you must provide a professional headline and at least one skill.",
+            ],
+          },
+          "Onboarding cannot be completed — required fields are missing.",
+        );
+      }
+    }
+
     const updated = await this.users.update(userId, {
       ...(patch.fullName !== undefined ? { fullName: patch.fullName } : {}),
       ...(patch.avatarUrl !== undefined ? { avatarUrl: patch.avatarUrl } : {}),
@@ -246,10 +269,14 @@ export class AuthService {
       tokenHash: crypto.createHash("sha256").update(rawToken).digest("hex"),
       expiresAt: new Date(Date.now() + 30 * 60_000), // 30 min
     });
-    // TODO[email]: dispatch /reset-password?token=<rawToken> via the
-    // notifications service. Keeping the email out-of-band keeps the
-    // service layer agnostic of transport.
-    logger.info({ event: "auth.password.reset.issue", userId: user.id, rawToken });
+    const resetLink = `${env.frontendOrigin}/reset-password?token=${rawToken}`;
+    await email.send({
+      to: user.email,
+      subject: "Reset your Aavasar password",
+      text: `Hi ${user.fullName},\n\nWe received a request to reset your Aavasar password. Click the link below to set a new one:\n\n${resetLink}\n\nThis link expires in 30 minutes. If you didn't request this, you can safely ignore this email.\n\n— The Aavasar Team`,
+      html: `<p>Hi ${user.fullName},</p><p>We received a request to reset your Aavasar password. Click the button below to set a new one:</p><p><a href="${resetLink}" style="display:inline-block;padding:12px 24px;background:#4338ca;color:#fff;text-decoration:none;border-radius:6px;font-weight:600;">Reset Password</a></p><p>This link expires in 30 minutes. If you didn't request this, you can safely ignore this email.</p><p>— The Aavasar Team</p>`,
+    });
+    logger.info({ event: "auth.password.reset.issue", userId: user.id });
   }
 
   // ---------- Reset password ----------
@@ -310,11 +337,18 @@ export class AuthService {
     email: string,
     tokenVersion: number,
     userRow: Parameters<typeof toSessionUser>[0],
+    remember = true,
   ): Promise<AuthSessionDto> {
     const accessToken = signAccessToken({ sub: userId, role, email });
     const jti = crypto.randomUUID();
-    const refreshToken = signRefreshToken({ sub: userId, jti, tokenVersion });
-    const refreshExpiresAt = new Date(Date.now() + env.jwt.refreshTtlSeconds * 1000);
+    // When "Remember me" is unchecked, use a shorter 1-day refresh TTL
+    // instead of the default 30-day window.
+    const refreshTtl = remember ? env.jwt.refreshTtlSeconds : 86_400;
+    const refreshToken = signRefreshToken(
+      { sub: userId, jti, tokenVersion },
+      refreshTtl,
+    );
+    const refreshExpiresAt = new Date(Date.now() + refreshTtl * 1000);
 
     await this.authRepo.createRefreshToken({
       id: jti,

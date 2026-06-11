@@ -11,7 +11,7 @@
 import type { GigDto, ListGigsQuery, CreateGigRequest, UpdateGigRequest } from "./gig.contracts";
 import { toGigDto } from "./gig.mapper";
 import { GigRepository } from "./gig.repository";
-import { parseSort } from "@lib/pagination";
+import { parseSort, type Pagination } from "@lib/pagination";
 import { ForbiddenError, NotFoundError } from "@lib/errors";
 import type { AuthedUser } from "@middlewares/auth";
 
@@ -43,6 +43,23 @@ export class GigService {
     return rows.map(toGigDto);
   }
 
+  /** Every gig the acting recruiter posted (all statuses) — "My Gigs". */
+  async listMine(
+    actor: AuthedUser,
+    page: Pagination,
+  ): Promise<{ items: GigDto[]; total: number; page: number; pageSize: number }> {
+    if (actor.role !== "recruiter" && actor.role !== "admin") {
+      throw new ForbiddenError("Only recruiters can view posted gigs.");
+    }
+    const { items, total } = await this.repo.listByPoster(actor.id, page);
+    return {
+      items: items.map(toGigDto),
+      total,
+      page: page.page,
+      pageSize: page.pageSize,
+    };
+  }
+
   async getById(id: string): Promise<GigDto> {
     const row = await this.repo.findById(id);
     if (!row) throw new NotFoundError("Gig not found.");
@@ -59,7 +76,9 @@ export class GigService {
       title: input.title,
       category: input.category,
       description: input.description,
-      companyId: input.companyId,
+      // Omit for individual gigs — the gig then carries the recruiter's
+      // own identity (via `postedBy`) instead of a company's.
+      companyId: input.companyId ?? null,
       location: input.location,
       duration: input.duration,
       payKind: input.payKind,
@@ -68,8 +87,9 @@ export class GigService {
       tags: input.tags,
       isPremium: input.isPremium ?? false,
       postedByUserId: actor.id,
-      // New gigs start as `draft`; the recruiter publishes via update.
-      status: "draft",
+      // `publish` → live immediately; otherwise saved as a draft the
+      // recruiter can publish later from "My Gigs".
+      status: input.publish ? "active" : "draft",
     });
     return toGigDto(row);
   }
@@ -78,6 +98,10 @@ export class GigService {
     const existing = await this.repo.findById(id);
     if (!existing) throw new NotFoundError("Gig not found.");
     this.assertCanMutate(actor, existing.postedByUserId);
+
+    if (patch.status && patch.status !== existing.status) {
+      this.validateTransition(existing.status, patch.status);
+    }
 
     const row = await this.repo.update(id, {
       ...(patch.title !== undefined ? { title: patch.title } : {}),
@@ -104,6 +128,20 @@ export class GigService {
   }
 
   // ---------- Guards ----------
+
+  private validateTransition(current: string, next: string): void {
+    const allowed: Record<string, string[]> = {
+      draft: ["active", "rejected"],
+      active: ["reviewing", "rejected"],
+      reviewing: ["completed", "rejected"],
+      submitted: [],
+      completed: [],
+      rejected: [],
+    };
+    if (!allowed[current]?.includes(next)) {
+      throw new ForbiddenError(`Cannot transition gig from ${current} to ${next}.`);
+    }
+  }
 
   private assertCanMutate(actor: AuthedUser, ownerId: string): void {
     if (actor.role === "admin") return;

@@ -18,6 +18,9 @@ const CompanyRefSchema = z.object({
   id: z.string(),
   name: z.string(),
   verified: z.boolean(),
+  /** Gates company-identity gig posting — only "approved" companies qualify. */
+  registrationStatus: z.enum(["pending_review", "approved", "rejected"]),
+  logoUrl: z.string().nullable(),
 });
 
 const SessionUserAggregateSchema = z.object({

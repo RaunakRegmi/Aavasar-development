@@ -123,6 +123,10 @@ export type RefreshSessionRequest = z.infer<typeof RefreshSessionRequestSchema>;
 /**
  * Profile patch — mirrors the backend's `UpdateProfileRequestSchema`.
  * Used to push the uploaded avatar URL onto the session user mid-onboarding.
+ *
+ * Guard: `onboardingCompleted: true` requires `headline` and `skills` in
+ * the same request so a premature PATCH (e.g. avatar-only) can't silently
+ * flip the flag.
  */
 export const UpdateProfileRequestSchema = z
   .object({
@@ -136,7 +140,18 @@ export const UpdateProfileRequestSchema = z
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "Provide at least one field to update.",
-  });
+  })
+  .refine(
+    (data) => {
+      if (!data.onboardingCompleted) return true;
+      return !!data.headline && !!data.skills && data.skills.length > 0;
+    },
+    {
+      message:
+        "To complete onboarding you must provide a professional headline and at least one skill.",
+      path: ["onboardingCompleted"],
+    },
+  );
 export type UpdateProfileRequest = z.infer<typeof UpdateProfileRequestSchema>;
 
 export const ChangePasswordRequestSchema = z

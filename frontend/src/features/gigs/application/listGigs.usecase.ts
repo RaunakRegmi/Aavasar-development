@@ -21,6 +21,10 @@ export async function listFeaturedGigs(): Promise<Gig[]> {
   return gigService.featured();
 }
 
+export async function getGigById(id: string): Promise<Gig> {
+  return gigService.getById(id);
+}
+
 export async function listRecruiterPipeline() {
   return gigService.pipeline();
 }

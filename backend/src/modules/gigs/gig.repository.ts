@@ -7,21 +7,22 @@
  */
 import type { Prisma, PrismaClient } from "@prisma/client";
 import { toPrismaPage, type Pagination } from "@lib/pagination";
-import type { GigWithCompany } from "./gig.mapper";
+import type { GigWithRelations } from "./gig.mapper";
 import type { ListGigsQuery } from "./gig.contracts";
 
-const INCLUDE_COMPANY = {
-  company: { select: { id: true, name: true, verified: true } },
+const INCLUDE_RELATIONS = {
+  company: { select: { id: true, name: true, verified: true, logoUrl: true } },
+  postedBy: { select: { id: true, fullName: true, avatarUrl: true, verified: true } },
 } satisfies Prisma.GigInclude;
 
 export class GigRepository {
   constructor(private readonly db: PrismaClient) {}
 
-  findById(id: string): Promise<GigWithCompany | null> {
+  findById(id: string): Promise<GigWithRelations | null> {
     return this.db.gig.findUnique({
       where: { id },
-      include: INCLUDE_COMPANY,
-    }) as Promise<GigWithCompany | null>;
+      include: INCLUDE_RELATIONS,
+    }) as Promise<GigWithRelations | null>;
   }
 
   /**
@@ -32,7 +33,7 @@ export class GigRepository {
   async list(
     filters: ListGigsQuery,
     orderBy: Prisma.GigOrderByWithRelationInput[],
-  ): Promise<{ items: GigWithCompany[]; total: number }> {
+  ): Promise<{ items: GigWithRelations[]; total: number }> {
     const where: Prisma.GigWhereInput = {
       ...(filters.category ? { category: { equals: filters.category, mode: "insensitive" } } : {}),
       ...(filters.location ? { location: filters.location } : {}),
@@ -55,27 +56,51 @@ export class GigRepository {
         where,
         orderBy: orderBy.length > 0 ? orderBy : [{ postedAt: "desc" }],
         ...pageArgs,
-        include: INCLUDE_COMPANY,
-      }) as Prisma.PrismaPromise<GigWithCompany[]>,
+        include: INCLUDE_RELATIONS,
+      }) as Prisma.PrismaPromise<GigWithRelations[]>,
       this.db.gig.count({ where }),
     ]);
 
     return { items, total };
   }
 
-  create(input: Prisma.GigUncheckedCreateInput): Promise<GigWithCompany> {
-    return this.db.gig.create({
-      data: input,
-      include: INCLUDE_COMPANY,
-    }) as Promise<GigWithCompany>;
+  /**
+   * Every gig posted by a given recruiter (all statuses, incl. drafts),
+   * newest first. Backs the recruiter "My Gigs" management page.
+   */
+  async listByPoster(
+    userId: string,
+    page: Pagination,
+  ): Promise<{ items: GigWithRelations[]; total: number }> {
+    const where: Prisma.GigWhereInput = { postedByUserId: userId };
+    const pageArgs = toPrismaPage(page);
+
+    const [items, total] = await this.db.$transaction([
+      this.db.gig.findMany({
+        where,
+        orderBy: [{ postedAt: "desc" }],
+        ...pageArgs,
+        include: INCLUDE_RELATIONS,
+      }) as Prisma.PrismaPromise<GigWithRelations[]>,
+      this.db.gig.count({ where }),
+    ]);
+
+    return { items, total };
   }
 
-  update(id: string, patch: Prisma.GigUpdateInput): Promise<GigWithCompany> {
+  create(input: Prisma.GigUncheckedCreateInput): Promise<GigWithRelations> {
+    return this.db.gig.create({
+      data: input,
+      include: INCLUDE_RELATIONS,
+    }) as Promise<GigWithRelations>;
+  }
+
+  update(id: string, patch: Prisma.GigUpdateInput): Promise<GigWithRelations> {
     return this.db.gig.update({
       where: { id },
       data: patch,
-      include: INCLUDE_COMPANY,
-    }) as Promise<GigWithCompany>;
+      include: INCLUDE_RELATIONS,
+    }) as Promise<GigWithRelations>;
   }
 
   delete(id: string): Promise<void> {
@@ -83,12 +108,12 @@ export class GigRepository {
   }
 
   /** Featured = active + premium, newest first. Used by the marketing site. */
-  featured(limit = 4): Promise<GigWithCompany[]> {
+  featured(limit = 4): Promise<GigWithRelations[]> {
     return this.db.gig.findMany({
       where: { status: "active", isPremium: true },
       orderBy: { postedAt: "desc" },
       take: limit,
-      include: INCLUDE_COMPANY,
-    }) as Promise<GigWithCompany[]>;
+      include: INCLUDE_RELATIONS,
+    }) as Promise<GigWithRelations[]>;
   }
 }

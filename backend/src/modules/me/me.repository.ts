@@ -19,7 +19,7 @@ export class MeRepository {
       where: { id: userId },
       include: {
         companyMembership: {
-          select: { id: true, name: true, verified: true },
+          select: { id: true, name: true, verified: true, registrationStatus: true, logoUrl: true },
         },
         uploads: {
           orderBy: { createdAt: "desc" },

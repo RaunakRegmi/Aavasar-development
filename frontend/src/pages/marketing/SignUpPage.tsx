@@ -31,7 +31,18 @@ import {
   type SignUpRequest,
 } from "@features/auth";
 import { ApiError } from "@shared/lib/transport";
+import { env } from "@shared/lib/env";
 import { routes } from "@shared/config/routes";
+
+const OAUTH_PROVIDERS = [
+  { name: "Google", provider: "google" },
+  { name: "LinkedIn", provider: "linkedin" },
+  { name: "GitHub", provider: "github" },
+] as const;
+
+function startOAuth(provider: string) {
+  window.location.href = `${env.apiBaseUrl}/auth/oauth/${provider}/start`;
+}
 
 type Role = "student" | "recruiter";
 
@@ -214,30 +225,17 @@ export default function SignUpPage() {
           </span>
           <span style={{ flex: 1, height: 1, background: "var(--border-default)" }} />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          {/* TODO[oauth]: wire to /auth/oauth/{google,linkedin}/start once backend exists */}
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() =>
-              toast.info("Coming soon", {
-                description: "Google sign-in is being wired up.",
-              })
-            }
-          >
-            Google
-          </Button>
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() =>
-              toast.info("Coming soon", {
-                description: "LinkedIn sign-in is being wired up.",
-              })
-            }
-          >
-            LinkedIn
-          </Button>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+          {OAUTH_PROVIDERS.map(({ name, provider }) => (
+            <Button
+              key={provider}
+              variant="outline"
+              type="button"
+              onClick={() => startOAuth(provider)}
+            >
+              {name}
+            </Button>
+          ))}
         </div>
 
         <div

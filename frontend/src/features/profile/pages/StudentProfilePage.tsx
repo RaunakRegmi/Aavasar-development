@@ -86,7 +86,19 @@ export default function StudentProfilePage() {
   if (user && user.role !== "student") {
     return <Navigate to={routes.recruiterDashboard} replace />;
   }
-  if (me.isLoading || !me.data) return <PageLoader />;
+  if (me.isLoading) return <PageLoader />;
+  if (me.isError || !me.data) {
+    return (
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <Icon name="AlertCircle" size={32} style={{ color: "var(--danger-500)" }} />
+        <h2 style={{ fontFamily: "var(--font-display)", margin: "16px 0 8px" }}>Failed to load profile</h2>
+        <p style={{ fontFamily: "var(--font-text)", color: "var(--text-muted)", marginBottom: 16 }}>
+          {me.error instanceof Error ? me.error.message : "Couldn't fetch your profile."}
+        </p>
+        <Button variant="outline" onClick={() => me.refetch()}>Retry</Button>
+      </div>
+    );
+  }
 
   const { user: profile, uploads } = me.data;
 

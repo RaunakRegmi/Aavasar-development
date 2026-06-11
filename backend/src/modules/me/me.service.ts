@@ -53,6 +53,8 @@ export class MeService {
             id: row.companyMembership.id,
             name: row.companyMembership.name,
             verified: row.companyMembership.verified,
+            registrationStatus: row.companyMembership.registrationStatus,
+            logoUrl: row.companyMembership.logoUrl ?? null,
           }
         : null,
       uploads: latest,

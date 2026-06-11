@@ -33,10 +33,10 @@ const RelativeOrAbsoluteUrlSchema = z.string().min(1).max(2048);
 export const OnboardingPortfolioSchema = z.object({
   bio: z.string().min(50, "Bio must be at least 50 characters.").max(500),
   avatarUrl: RelativeOrAbsoluteUrlSchema.optional(),
-  /** CV PDF — uploaded via /uploads/portfolio. */
-  portfolioUrl: RelativeOrAbsoluteUrlSchema.optional(),
+  /** CV PDF — uploaded via /uploads/portfolio. Required for finalize. */
+  portfolioUrl: RelativeOrAbsoluteUrlSchema.min(1, "Upload your CV / portfolio PDF."),
   /** Gov ID PDF/photo — uploaded via /uploads/nid. Required for finalize. */
-  nidUrl: RelativeOrAbsoluteUrlSchema.optional(),
+  nidUrl: RelativeOrAbsoluteUrlSchema.min(1, "Upload your government ID for verification."),
   links: z.object({
     github: z.string().url("Use a full https:// URL.").optional().or(z.literal("")),
     linkedin: z.string().url("Use a full https:// URL.").optional().or(z.literal("")),

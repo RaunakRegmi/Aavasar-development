@@ -41,8 +41,16 @@ export function ProtectedRoute({ allow }: ProtectedRouteProps) {
   }
 
   // (2) Force un-onboarded users onto the wizard
+  //     Carry a `reason` in location.state so the onboarding page can
+  //     display a contextual message ("finish setup before browsing").
   if (!user.onboardingCompleted && location.pathname !== routes.onboarding) {
-    return <Navigate to={routes.onboarding} replace />;
+    return (
+      <Navigate
+        to={routes.onboarding}
+        replace
+        state={{ onboardingReason: "incomplete" }}
+      />
+    );
   }
 
   // (3) Anti-loop: kick onboarded users OFF the wizard

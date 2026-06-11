@@ -12,10 +12,10 @@ export const routes = {
   home: "/",
   gigs: "/gigs",                          // Public gig listing
   gig: "/gigs/:id",                       // Public gig detail               TODO STUB
-  howItWorks: "/how-it-works",
+  howItWorks: "/how-it-works",               //                       NOW LIVE
   about: "/about",
   contact: "/contact",
-  pricing: "/pricing",                    //                                 TODO STUB
+  pricing: "/pricing",                    //                                 NOW LIVE
   forBusinesses: "/for-businesses",       //                                 TODO STUB
   forStudents: "/for-students",           //                                 TODO STUB
   successStories: "/success-stories",     //                                 TODO STUB
@@ -32,6 +32,7 @@ export const routes = {
   logIn: "/log-in",
   forgotPassword: "/forgot-password",
   resetPassword: "/reset-password",
+  authCallback: "/auth/callback",
 
   // ---- Onboarding ----
   onboarding: "/onboarding",
@@ -40,6 +41,7 @@ export const routes = {
   studentRoot: "/student",
   studentDashboard: "/student/dashboard",
   studentFindWork: "/student/find-work",
+  studentGigDetail: "/student/gigs/:id",
   studentMyGigs: "/student/my-gigs",
   studentMessages: "/student/messages",
   studentLearning: "/student/learning",
@@ -54,6 +56,7 @@ export const routes = {
   recruiterDashboard: "/recruiter/dashboard",
   recruiterCompanyRegistration: "/recruiter/company/register",
   recruiterBrowseTalent: "/recruiter/browse-talent",
+  recruiterTalentDetail: "/recruiter/talent/:id",
   recruiterApplicants: "/recruiter/applicants",
   recruiterPostGig: "/recruiter/post-gig",
   recruiterMessages: "/recruiter/messages",
@@ -67,12 +70,22 @@ export const routes = {
 
 export type RoutePath = (typeof routes)[keyof typeof routes];
 
-/** Helper for building a gig detail path. */
+/** Helper for building a public gig detail path. */
 export function gigPath(id: string): string {
   return `/gigs/${encodeURIComponent(id)}`;
+}
+
+/** Helper for building a student gig detail path (authenticated). */
+export function studentGigPath(id: string): string {
+  return `/student/gigs/${encodeURIComponent(id)}`;
 }
 
 /** Helper for building an applicant detail path. */
 export function applicantPath(id: string): string {
   return `/recruiter/applicants/${encodeURIComponent(id)}`;
+}
+
+/** Helper for building a recruiter-facing talent (student) detail path. */
+export function talentPath(id: string): string {
+  return `/recruiter/talent/${encodeURIComponent(id)}`;
 }

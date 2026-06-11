@@ -9,6 +9,9 @@ import { useAuthStore } from "../store/auth.store";
 export async function logIn(input: LogInRequest): Promise<AuthSession> {
   const payload = LogInRequestSchema.parse(input);
   const session = await authService.logIn(payload);
+  // Persist "remember me" preference so the store picks the right
+  // storage backend (localStorage vs sessionStorage).
+  useAuthStore.getState().setRemember(payload.remember ?? true);
   useAuthStore.getState().setSession(session);
   return session;
 }

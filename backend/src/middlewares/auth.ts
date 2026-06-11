@@ -49,3 +49,7 @@ export function requireRole(...allowed: ReadonlyArray<AuthedUser["role"]>) {
     next();
   };
 }
+
+export const requireRecruiter = requireRole("recruiter");
+export const requireAdmin = requireRole("admin");
+export const requireStudent = requireRole("student");

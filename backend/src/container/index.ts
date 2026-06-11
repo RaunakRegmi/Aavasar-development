@@ -37,13 +37,15 @@ import { CompanyRepository } from "@modules/companies/company.repository";
 import { CompanyService } from "@modules/companies/company.service";
 import { CompanyController } from "@modules/companies/company.controller";
 
-export interface ContainerOverrides {
-  db?: PrismaClient;
-}
+import { NotificationRepository } from "@modules/notifications/notification.repository";
+import { NotificationService } from "@modules/notifications/notification.service";
+import { NotificationController } from "@modules/notifications/notification.controller";
+
+import { TalentService } from "@modules/users/talent.service";
+import { TalentController } from "@modules/users/talent.controller";
 
 export interface Container {
   db: PrismaClient;
-
   userRepo: UserRepository;
   authRepo: AuthRepository;
   gigRepo: GigRepository;
@@ -51,13 +53,16 @@ export interface Container {
   meRepo: MeRepository;
   appRepo: ApplicationRepository;
   companyRepo: CompanyRepository;
+  notificationRepo: NotificationRepository;
 
+  notificationService: NotificationService;
   authService: AuthService;
   gigService: GigService;
   uploadService: UploadService;
   meService: MeService;
   appService: ApplicationService;
   companyService: CompanyService;
+  talentService: TalentService;
 
   authController: AuthController;
   gigController: GigController;
@@ -65,37 +70,46 @@ export interface Container {
   meController: MeController;
   appController: ApplicationController;
   companyController: CompanyController;
+  talentController: TalentController;
+  notificationController: NotificationController;
 }
+
+export type ContainerOverrides = Partial<Container>;
 
 export function makeContainer(overrides: ContainerOverrides = {}): Container {
   const db = overrides.db ?? defaultPrisma;
 
-  const userRepo = new UserRepository(db);
-  const authRepo = new AuthRepository(db);
-  const gigRepo = new GigRepository(db);
-  const uploadRepo = new UploadRepository(db);
-  const meRepo = new MeRepository(db);
-  const appRepo = new ApplicationRepository(db);
-  const companyRepo = new CompanyRepository(db);
+  const userRepo = overrides.userRepo ?? new UserRepository(db);
+  const authRepo = overrides.authRepo ?? new AuthRepository(db);
+  const gigRepo = overrides.gigRepo ?? new GigRepository(db);
+  const uploadRepo = overrides.uploadRepo ?? new UploadRepository(db);
+  const meRepo = overrides.meRepo ?? new MeRepository(db);
+  const appRepo = overrides.appRepo ?? new ApplicationRepository(db);
+  const companyRepo = overrides.companyRepo ?? new CompanyRepository(db);
+  const notificationRepo = overrides.notificationRepo ?? new NotificationRepository(db);
 
-  const authService = new AuthService(userRepo, authRepo);
-  const gigService = new GigService(gigRepo);
-  const uploadService = new UploadService(uploadRepo, userRepo);
-  const meService = new MeService(meRepo);
-  const appService = new ApplicationService(appRepo);
-  const companyService = new CompanyService(companyRepo);
+  const notificationService = overrides.notificationService ?? new NotificationService(notificationRepo);
+  const authService = overrides.authService ?? new AuthService(userRepo, authRepo);
+  const gigService = overrides.gigService ?? new GigService(gigRepo);
+  const uploadService = overrides.uploadService ?? new UploadService(uploadRepo, userRepo);
+  const meService = overrides.meService ?? new MeService(meRepo);
+  const appService = overrides.appService ?? new ApplicationService(appRepo, notificationService);
+  const companyService = overrides.companyService ?? new CompanyService(companyRepo);
+  const talentService = overrides.talentService ?? new TalentService(userRepo);
 
-  const authController = new AuthController(authService);
-  const gigController = new GigController(gigService);
-  const uploadController = new UploadController(uploadService);
-  const meController = new MeController(meService, authService);
-  const appController = new ApplicationController(appService);
-  const companyController = new CompanyController(companyService);
+  const authController = overrides.authController ?? new AuthController(authService);
+  const gigController = overrides.gigController ?? new GigController(gigService);
+  const uploadController = overrides.uploadController ?? new UploadController(uploadService);
+  const meController = overrides.meController ?? new MeController(meService, authService);
+  const appController = overrides.appController ?? new ApplicationController(appService);
+  const companyController = overrides.companyController ?? new CompanyController(companyService);
+  const talentController = overrides.talentController ?? new TalentController(talentService);
+  const notificationController = overrides.notificationController ?? new NotificationController(notificationService);
 
   return {
     db,
-    userRepo, authRepo, gigRepo, uploadRepo, meRepo, appRepo, companyRepo,
-    authService, gigService, uploadService, meService, appService, companyService,
-    authController, gigController, uploadController, meController, appController, companyController,
+    userRepo, authRepo, gigRepo, uploadRepo, meRepo, appRepo, companyRepo, notificationRepo,
+    notificationService, authService, gigService, uploadService, meService, appService, companyService, talentService,
+    authController, gigController, uploadController, meController, appController, companyController, talentController, notificationController,
   };
 }

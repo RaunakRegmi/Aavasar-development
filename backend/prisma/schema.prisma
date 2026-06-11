@@ -102,6 +102,7 @@ model User {
   companyMembership     Company?         @relation("CompanyContact")
   uploads               Upload[]
   applications          Application[]
+  notifications         Notification[]
 
   @@map("users")
 }
@@ -161,10 +162,10 @@ model PasswordReset {
 model Company {
   id                  String                      @id @default(cuid())
   name                String
-  /// PAN / VAT registration number for invoicing.
-  panVat              String?                     @map("pan_vat")
-  /// Government business registration number.
-  registrationNumber  String?                     @map("registration_number")
+  /// PAN / VAT registration number for invoicing. Required at registration.
+  panVat              String                      @map("pan_vat")
+  /// Government business registration number. Required at registration.
+  registrationNumber  String                      @map("registration_number")
   /// Phone number of the company owner / primary contact.
   ownerPhone          String?                     @map("owner_phone")
   registrationStatus  CompanyRegistrationStatus   @default(pending_review) @map("registration_status")
@@ -191,7 +192,10 @@ model Gig {
   title           String
   category        String
   description     String
-  companyId       String          @map("company_id")
+  /// Nullable: a gig may be posted under a company OR by an individual
+  /// recruiter (no company). Individual gigs surface the recruiter's
+  /// own identity via `postedBy`.
+  companyId       String?         @map("company_id")
   postedByUserId  String          @map("posted_by_user_id")
   location        GigLocationKind
   /// Display string: "2 Weeks", "4 Hours", "Project-based"
@@ -207,7 +211,7 @@ model Gig {
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
 
-  company         Company         @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  company         Company?        @relation(fields: [companyId], references: [id], onDelete: Restrict)
   postedBy        User            @relation("PostedBy", fields: [postedByUserId], references: [id], onDelete: Restrict)
   applications    Application[]
 
@@ -266,4 +270,37 @@ model Application {
   @@index([userId])
   @@index([gigId])
   @@map("applications")
+}
+
+/// Notification events — replaces the hard-coded stub. Each row
+/// represents a single event for a single user (e.g. "Application
+/// accepted", "New applicant", "Payout settled").
+enum NotificationKind {
+  application_created
+  application_accepted
+  application_rejected
+  new_message
+  payout_settled
+  profile_verified
+  gig_completed
+}
+
+model Notification {
+  id        String             @id @default(cuid())
+  userId    String             @map("user_id")
+  kind      NotificationKind
+  /// Human-readable title shown in the notification center.
+  title     String
+  /// Supporting description / body.
+  description String
+  /// Related entity ID (gig ID, application ID, etc.) — used to build
+  /// deep links from the notification.
+  link      String?
+  readAt    DateTime?          @map("read_at")
+  createdAt DateTime           @default(now()) @map("created_at")
+
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@map("notifications")
 }

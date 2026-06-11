@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useOnboardingState } from "@features/onboarding";
 import { useCurrentUser } from "@features/auth";
 import { routes } from "@shared/config/routes";
+import { Icon } from "@shared/icons";
 import { StepBasic } from "./steps/StepBasic";
 import { StepSkills } from "./steps/StepSkills";
 import { StepPortfolio } from "./steps/StepPortfolio";
@@ -70,8 +71,14 @@ function TopBar({ step }: { step: number }) {
   );
 }
 
+interface OnboardingLocationState {
+  onboardingReason?: "incomplete";
+}
+
 export default function OnboardingPage() {
   const user = useCurrentUser();
+  const location = useLocation();
+  const state = location.state as OnboardingLocationState | null;
   const { step, basic, skills, setStep, setBasic, toggleSkill, reset } =
     useOnboardingState();
 
@@ -98,6 +105,35 @@ export default function OnboardingPage() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--surface-page)" }}>
       <TopBar step={step} />
+
+      {state?.onboardingReason === "incomplete" && (
+        <div
+          style={{
+            maxWidth: 880,
+            margin: "16px auto 0",
+            padding: "14px 20px",
+            borderRadius: "var(--radius-md)",
+            background: "var(--warning-100)",
+            border: "1px solid var(--warning-300)",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          <Icon name="AlertTriangle" size={20} style={{ color: "var(--warning-600)", flexShrink: 0 }} />
+          <span
+            style={{
+              fontFamily: "var(--font-text)",
+              fontSize: 15,
+              color: "var(--warning-800)",
+              lineHeight: 1.5,
+            }}
+          >
+            Onboarding incomplete — please fill in all required details to access the platform.
+          </span>
+        </div>
+      )}
+
       <div style={{ padding: "0 24px 64px" }}>
         {step === 1 && (
           <StepBasic

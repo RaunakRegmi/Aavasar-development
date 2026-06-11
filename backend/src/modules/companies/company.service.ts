@@ -17,8 +17,8 @@ export class CompanyService {
 
     const row = await this.repo.create({
       name: input.name,
-      panVat: input.panVat ?? null,
-      registrationNumber: input.registrationNumber ?? null,
+      panVat: input.panVat,
+      registrationNumber: input.registrationNumber,
       ownerPhone: input.ownerPhone ?? null,
       logoUrl: input.logoUrl ?? null,
       documentUrl: input.documentUrl ?? null,

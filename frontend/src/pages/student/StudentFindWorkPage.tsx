@@ -24,7 +24,7 @@ import { Icon } from "@shared/icons";
 import { Input } from "@shared/ui";
 import { useGigList, type GigLocation, type GigPayKind } from "@features/gigs";
 import { formatNprFixed, formatRupeeRate } from "@shared/lib/utils";
-import { gigPath } from "@shared/config/routes";
+import { studentGigPath } from "@shared/config/routes";
 
 type LocationFilter = "all" | GigLocation;
 type PayFilter = "all" | GigPayKind;
@@ -239,7 +239,7 @@ export default function StudentFindWorkPage() {
                 <Card
                   key={g.id}
                   interactive
-                  onClick={() => navigate(gigPath(g.id))}
+                  onClick={() => navigate(studentGigPath(g.id))}
                   style={{
                     display: "flex",
                     flexDirection: "column",
@@ -309,12 +309,18 @@ export default function StudentFindWorkPage() {
                   >
                     <span
                       style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 4,
                         fontFamily: "var(--font-text)",
                         fontSize: 13,
                         color: "var(--text-subtle)",
                       }}
                     >
-                      By {g.company.name}
+                      By {g.poster.name}
+                      {g.poster.verified && (
+                        <Icon name="BadgeCheck" size={14} style={{ color: "var(--brand-700)" }} />
+                      )}
                     </span>
                     <span
                       style={{

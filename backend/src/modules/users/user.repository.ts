@@ -46,6 +46,46 @@ export class UserRepository {
     return this.db.user.update({ where: { id }, data: patch });
   }
 
+  /** A single student by id (null if missing or not a student). */
+  findStudentById(id: string): Promise<User | null> {
+    return this.db.user.findFirst({ where: { id, role: "student" } });
+  }
+
+  findStudents(filters: {
+    query?: string;
+    skills?: string[];
+    page: number;
+    pageSize: number;
+  }) {
+    const where: Prisma.UserWhereInput = {
+      role: "student",
+      ...(filters.query
+        ? {
+            OR: [
+              { fullName: { contains: filters.query, mode: "insensitive" } },
+              { headline: { contains: filters.query, mode: "insensitive" } },
+              { bio: { contains: filters.query, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+      ...(filters.skills && filters.skills.length > 0
+        ? { skills: { hasEvery: filters.skills } }
+        : {}),
+    };
+
+    const skip = (filters.page - 1) * filters.pageSize;
+
+    return this.db.$transaction([
+      this.db.user.findMany({
+        where,
+        skip,
+        take: filters.pageSize,
+        orderBy: { createdAt: "desc" },
+      }),
+      this.db.user.count({ where }),
+    ]);
+  }
+
   /** Bumps `tokenVersion` to invalidate every outstanding refresh token. */
   invalidateAllSessions(userId: string): Promise<User> {
     return this.db.user.update({

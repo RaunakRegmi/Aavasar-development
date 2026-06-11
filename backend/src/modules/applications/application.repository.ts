@@ -46,6 +46,23 @@ export class ApplicationRepository {
     ]) as Promise<[Array<Record<string, unknown>>, number]>;
   }
 
+  listForGig(gigId: string, page: number, pageSize: number) {
+    const where: Prisma.ApplicationWhereInput = { gigId };
+
+    return this.db.$transaction([
+      this.db.application.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: {
+          user: { select: { id: true, fullName: true, avatarUrl: true, headline: true } },
+        },
+      }),
+      this.db.application.count({ where }),
+    ]);
+  }
+
   create(input: Prisma.ApplicationUncheckedCreateInput) {
     return this.db.application.create({
       data: input,

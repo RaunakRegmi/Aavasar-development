@@ -123,17 +123,17 @@ export default function CompanyRegistrationPage() {
     }
   };
 
-  const goToReview = () => {
+  const goToMedia = () => {
     if (!validateSection()) return;
-    setSection("review");
+    setSection("media");
   };
 
   const handleSubmit = async () => {
     try {
       const result = await register.mutateAsync({
         name: form.name,
-        panVat: form.panVat || undefined,
-        registrationNumber: form.registrationNumber || undefined,
+        panVat: form.panVat,
+        registrationNumber: form.registrationNumber,
         ownerPhone: form.ownerPhone,
         logoUrl: logoUrl ?? undefined,
         documentUrl: docUrl ?? undefined,
@@ -241,20 +241,22 @@ export default function CompanyRegistrationPage() {
               aria-required
             />
             <Input
-              label="PAN / VAT number"
-              placeholder="Optional — e.g. 123456789"
+              label="PAN / VAT number *"
+              placeholder="e.g. 123456789"
               value={form.panVat ?? ""}
               onChange={(e) => setField("panVat", e.target.value)}
               error={errors.panVat}
               maxLength={50}
+              aria-required
             />
             <Input
-              label="Registration number"
-              placeholder="Optional — company registration / incorporation no."
+              label="Registration number *"
+              placeholder="Company registration / incorporation no."
               value={form.registrationNumber ?? ""}
               onChange={(e) => setField("registrationNumber", e.target.value)}
               error={errors.registrationNumber}
               maxLength={100}
+              aria-required
             />
             <Input
               label="Owner / contact phone *"
@@ -268,7 +270,7 @@ export default function CompanyRegistrationPage() {
             />
           </div>
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 24 }}>
-            <Button type="button" variant="primary" onClick={goToReview}>
+            <Button type="button" variant="primary" onClick={goToMedia}>
               Continue
             </Button>
           </div>

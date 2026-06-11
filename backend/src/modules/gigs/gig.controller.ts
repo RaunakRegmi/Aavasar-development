@@ -6,6 +6,7 @@
 import type { Request, Response } from "express";
 import { ok, okList, noContent } from "@lib/response";
 import { UnauthorizedError } from "@lib/errors";
+import type { Pagination } from "@lib/pagination";
 import type { GigService } from "./gig.service";
 import type { ListGigsQuery, CreateGigRequest, UpdateGigRequest } from "./gig.contracts";
 
@@ -21,6 +22,15 @@ export class GigController {
   featured = async (_req: Request, res: Response): Promise<void> => {
     const items = await this.service.listFeatured();
     ok(res, items);
+  };
+
+  mine = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) throw new UnauthorizedError();
+    const { items, total, page, pageSize } = await this.service.listMine(
+      req.user,
+      req.query as unknown as Pagination,
+    );
+    okList(res, items, { page, pageSize, total });
   };
 
   getById = async (req: Request, res: Response): Promise<void> => {

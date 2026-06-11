@@ -40,6 +40,8 @@ import { makeUploadRouter } from "@modules/uploads/upload.routes";
 import { makeMeRouter } from "@modules/me/me.routes";
 import { makeApplicationRouter } from "@modules/applications/application.routes";
 import { makeCompanyRouter } from "@modules/companies/company.routes";
+import { makeTalentRouter } from "@modules/users/talent.routes";
+import { makeNotificationRouter } from "@modules/notifications/notification.routes";
 import { makeContainer, type Container } from "@container/index";
 
 export function makeApp(container: Container = makeContainer()): Express {
@@ -119,6 +121,8 @@ export function makeApp(container: Container = makeContainer()): Express {
   app.use(`${env.apiBasePath}/gigs`, makeApplicationRouter(container.appController));
   app.use(`${env.apiBasePath}/gigs`, makeGigRouter(container.gigController));
   app.use(`${env.apiBasePath}/companies`, makeCompanyRouter(container.companyController));
+  app.use(`${env.apiBasePath}/talent`, makeTalentRouter(container.talentController));
+  app.use(`${env.apiBasePath}/notifications`, makeNotificationRouter(container.notificationController));
 
   // (10) 404
   app.use(notFound);

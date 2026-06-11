@@ -124,7 +124,7 @@ export function RecentGigs({ onApplyUnauth, onSeeMore }: RecentGigsProps) {
                     color: "var(--text-subtle)",
                   }}
                 >
-                  By {g.company.name}
+                  By {g.poster.name}
                 </span>
                 <button
                   type="button"

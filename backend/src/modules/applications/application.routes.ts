@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validate } from "@middlewares/validate";
-import { requireAuth, requireRole } from "@middlewares/auth";
+import { requireAuth, requireRole, requireStudent } from "@middlewares/auth";
 import { asyncHandler } from "@lib/async";
 import {
   CreateApplicationRequestSchema,
@@ -22,9 +22,23 @@ export function makeApplicationRouter(controller: ApplicationController): Router
   router.post(
     "/apply",
     requireAuth,
-    requireRole("student"),
+    requireStudent,
     validate({ body: CreateApplicationRequestSchema }),
     asyncHandler(controller.create),
+  );
+
+  router.get(
+    "/:gigId/applications",
+    requireAuth,
+    requireRole("recruiter", "admin"),
+    asyncHandler(controller.listForGig),
+  );
+
+  router.patch(
+    "/:id/status",
+    requireAuth,
+    requireRole("recruiter", "admin"),
+    asyncHandler(controller.updateStatus),
   );
 
   return router;

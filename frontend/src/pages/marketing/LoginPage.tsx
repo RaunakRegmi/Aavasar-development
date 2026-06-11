@@ -10,7 +10,7 @@
  *   L5  http POST /auth/log-in (with refresh-on-401 wired)
  *   L6  LogInRequestSchema parsed in front, AuthSessionSchema parsed back
  */
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Checkbox, Input, useToast } from "@shared/ui";
@@ -22,7 +22,18 @@ import {
   type LogInRequest,
 } from "@features/auth";
 import { ApiError } from "@shared/lib/transport";
+import { env } from "@shared/lib/env";
 import { routes } from "@shared/config/routes";
+
+const OAUTH_PROVIDERS = [
+  { name: "Google", provider: "google" },
+  { name: "LinkedIn", provider: "linkedin" },
+  { name: "GitHub", provider: "github" },
+] as const;
+
+function startOAuth(provider: string) {
+  window.location.href = `${env.apiBaseUrl}/auth/oauth/${provider}/start`;
+}
 
 interface LocationState {
   from?: string;
@@ -31,9 +42,11 @@ interface LocationState {
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const toast = useToast();
   const logIn = useLogIn();
   const from = (location.state as LocationState | null)?.from;
+  const oauthError = searchParams.get("error") === "oauth";
 
   const {
     register,
@@ -102,6 +115,50 @@ export default function LoginPage() {
           Sign in to continue to your dashboard.
         </p>
       </div>
+
+      {oauthError && (
+        <div
+          style={{
+            padding: "12px 16px",
+            borderRadius: "var(--radius-md)",
+            background: "var(--danger-50)",
+            border: "1px solid var(--danger-200)",
+            color: "var(--danger-800)",
+            fontFamily: "var(--font-text)",
+            fontSize: 14,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+          <span>
+            Social sign-in failed. Please try again or use email & password.
+          </span>
+          <button
+            onClick={() => setSearchParams({})}
+            style={{
+              marginLeft: "auto",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "inherit",
+              padding: 0,
+              lineHeight: 1,
+            }}
+            aria-label="Dismiss"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       <form
         onSubmit={onSubmit}
@@ -187,30 +244,17 @@ export default function LoginPage() {
           </span>
           <span style={{ flex: 1, height: 1, background: "var(--border-default)" }} />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          {/* TODO[oauth]: wire to /auth/oauth/{google,linkedin}/start once backend exists */}
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() =>
-              toast.info("Coming soon", {
-                description: "Google sign-in is being wired up.",
-              })
-            }
-          >
-            Google
-          </Button>
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() =>
-              toast.info("Coming soon", {
-                description: "LinkedIn sign-in is being wired up.",
-              })
-            }
-          >
-            LinkedIn
-          </Button>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+          {OAUTH_PROVIDERS.map(({ name, provider }) => (
+            <Button
+              key={provider}
+              variant="outline"
+              type="button"
+              onClick={() => startOAuth(provider)}
+            >
+              {name}
+            </Button>
+          ))}
         </div>
 
         <div

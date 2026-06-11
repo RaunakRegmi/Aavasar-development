@@ -64,6 +64,11 @@ export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
 /**
  * Profile-update — partial patch consumed by `PATCH /auth/me` and
  * `PATCH /me/profile`. Lengths match the DB constraints in schema.prisma.
+ *
+ * Guard: when the caller tries to flip `onboardingCompleted` to `true`,
+ * `headline` and `skills` MUST be supplied in the same request. This
+ * prevents a premature finalize (e.g. from an avatar-only PATCH) and
+ * keeps the precondition check close to the wire.
  */
 export const UpdateProfileRequestSchema = z
   .object({
@@ -77,7 +82,18 @@ export const UpdateProfileRequestSchema = z
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "Provide at least one field to update.",
-  });
+  })
+  .refine(
+    (data) => {
+      if (!data.onboardingCompleted) return true;
+      return !!data.headline && !!data.skills && data.skills.length > 0;
+    },
+    {
+      message:
+        "To complete onboarding you must provide a professional headline and at least one skill.",
+      path: ["onboardingCompleted"],
+    },
+  );
 export type UpdateProfileRequest = z.infer<typeof UpdateProfileRequestSchema>;
 
 /**

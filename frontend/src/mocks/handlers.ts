@@ -116,6 +116,21 @@ export const handlers: MockHandler[] = [
     },
   },
 
+  /* ----- Applications (must come before generic gig routes) ----- */
+  {
+    method: "POST",
+    match: /\/gigs\/apply$/,
+    resolve: () => ok({ id: `app_${Date.now()}`, status: "pending", createdAt: new Date().toISOString() }),
+  },
+  {
+    method: "GET",
+    match: /\/gigs\/applied(\?.*)?$/,
+    resolve: () => ({
+      status: 200,
+      data: { data: [], meta: { total: 0 } },
+    }),
+  },
+
   /* ----- Gigs ----- */
   {
     method: "GET",
@@ -132,6 +147,11 @@ export const handlers: MockHandler[] = [
   },
   {
     method: "GET",
+    match: /\/gigs\/[a-zA-Z0-9]+$/,
+    resolve: () => ok(mockRecentGigs[0] ?? mockFeaturedGigs[0]),
+  },
+  {
+    method: "GET",
     match: /\/recruiter\/gigs\/pipeline$/,
     resolve: () => ok(mockRecruiterPipeline),
   },
@@ -144,9 +164,61 @@ export const handlers: MockHandler[] = [
   { method: "GET", match: /\/recruiter\/dashboard\/kpis$/, resolve: () => ok(mockRecruiterKpis) },
   { method: "GET", match: /\/recruiter\/dashboard\/applicants$/, resolve: () => ok(mockApplicants) },
 
-  /* ----- Onboarding -----
-   * The per-step writes are local-only (see features/onboarding/
-   * application/onboarding.usecase.ts). Finalize goes through
-   * PATCH /auth/me, handled above.
-   */
+  /* ----- Me (profile aggregate) ----- */
+  {
+    method: "GET",
+    match: /\/me(\?.*)?$/,
+    resolve: () => ok({
+      user: {
+        ...mockStudentSession.user,
+        role: "recruiter",
+        headline: "Head of Talent · Aavasar",
+        bio: "Connecting student talent with real-world opportunities.",
+      },
+      company: {
+        id: "cmp_1",
+        name: "Aavasar Inc.",
+        verified: true,
+      },
+      uploads: { avatar: null, banner: null, portfolio: null, nid: null },
+    }),
+  },
+
+  /* ----- Notifications ----- */
+  {
+    method: "GET",
+    match: /\/notifications(\?.*)?$/,
+    resolve: () => ({
+      status: 200,
+      data: {
+        data: [
+          {
+            id: "n1",
+            kind: "application_created",
+            title: "New application received",
+            description: "A student applied to \"UX Designer\"",
+            link: null,
+            readAt: null,
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: "n2",
+            kind: "profile_verified",
+            title: "Profile verified",
+            description: "Your account has been verified successfully.",
+            link: null,
+            readAt: new Date(Date.now() - 86400000).toISOString(),
+            createdAt: new Date(Date.now() - 86400000).toISOString(),
+          },
+        ],
+        meta: { total: 2, unread: 1 },
+      },
+    }),
+  },
+  {
+    method: "POST",
+    match: /\/notifications\/mark-all-read$/,
+    resolve: () => ({ status: 204, data: null }),
+  },
+
 ];

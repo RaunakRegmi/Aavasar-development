@@ -1,7 +1,12 @@
 export {
   useGigList,
+  useGigById,
   useFeaturedGigs,
   useRecruiterPipeline,
+  useMyGigs,
+  useCreateGig,
+  useUpdateGigStatus,
+  useDeleteGig,
   gigQueryKeys,
 } from "./hooks/useGigs";
 export type {
@@ -11,4 +16,8 @@ export type {
   GigPayKind,
   GigLocation,
   GigPipelineRow,
+  GigPoster,
+  GigPostedAs,
+  CreateGigRequest,
+  CreateGigInput,
 } from "./contracts/gig.contract";
