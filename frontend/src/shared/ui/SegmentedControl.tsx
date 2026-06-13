@@ -24,12 +24,15 @@ export function SegmentedControl<T extends string>({
       role="tablist"
       style={{
         display: "grid",
-        gridTemplateColumns: `repeat(${options.length}, 1fr)`,
+        // Columns grow to fill, but never shrink below their label width —
+        // if they'd overflow a narrow screen the control scrolls instead.
+        gridTemplateColumns: `repeat(${options.length}, minmax(max-content, 1fr))`,
         gap: 4,
         padding: 4,
         background: "var(--surface-1)",
         border: "1px solid var(--border-default)",
         borderRadius: "var(--radius-sm)",
+        overflowX: "auto",
         ...style,
       }}
     >

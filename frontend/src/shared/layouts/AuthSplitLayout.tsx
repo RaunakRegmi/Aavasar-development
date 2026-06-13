@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Avatar } from "@shared/ui";
 import { Icon } from "@shared/icons";
 import { routes } from "@shared/config/routes";
+import { useIsMobile } from "@shared/hooks/useMediaQuery";
 
 /**
  * Auth split layout — the slate gradient + testimonial on the left,
@@ -21,6 +22,7 @@ export function AuthSplitLayout({
   dismissable = true,
 }: AuthSplitLayoutProps) {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   return (
     <div
       style={{
@@ -28,11 +30,12 @@ export function AuthSplitLayout({
         inset: 0,
         zIndex: 50,
         display: "grid",
-        gridTemplateColumns: "1fr 1fr",
+        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
         background: "var(--surface-page)",
       }}
     >
-      {/* Left — brand + testimonial */}
+      {/* Left — brand + testimonial (desktop/tablet only) */}
+      {!isMobile && (
       <div
         style={{
           background:
@@ -126,11 +129,12 @@ export function AuthSplitLayout({
           </div>
         </div>
       </div>
+      )}
 
       {/* Right — form */}
       <div
         style={{
-          padding: "56px 72px",
+          padding: isMobile ? "28px 20px" : "56px 72px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",

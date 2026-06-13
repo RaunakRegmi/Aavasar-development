@@ -15,7 +15,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Navigate } from "react-router-dom";
 import {
-  Avatar,
   Badge,
   Button,
   Card,
@@ -64,7 +63,6 @@ export default function StudentProfilePage() {
   const upload = useUpload();
   const toast = useToast();
   const cvInputRef = useRef<HTMLInputElement>(null);
-  const avatarInputRef = useRef<HTMLInputElement>(null);
   const applied = useMyApplications();
   const [tab, setTab] = useState<Tab>("overview");
   const [editing, setEditing] = useState(false);
@@ -154,34 +152,14 @@ export default function StudentProfilePage() {
     }
   };
 
-  const handleAvatarUpload = async (file: File) => {
-    if (!validateFile(file, "avatar")) return;
-    try {
-      const preview = createFilePreview(file);
-      const dto = await upload.mutateAsync({ kind: "avatar", file });
-      preview.revoke();
-      await patch.mutateAsync({ avatarUrl: dto.url });
-      toast.success("Profile picture updated");
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Upload failed.";
-      toast.error("Couldn't update photo", { description: msg });
-    }
-  };
-
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1180, margin: "0 auto" }}>
+    <div className="aav-page" style={{ maxWidth: 1180 }}>
       <ProfileBanner user={profile} variant="portfolio" />
 
       <TabBar tab={tab} onTab={setTab} />
 
       {tab === "overview" ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.6fr 1fr",
-            gap: 24,
-          }}
-        >
+        <div className="aav-split">
           {/* ---- Left column: editable identity ---- */}
           <div style={{ display: "grid", gap: 20 }}>
             <Card padding={28}>
@@ -738,79 +716,6 @@ export default function StudentProfilePage() {
                 <Badge tone={profile.onboardingCompleted ? "success" : "neutral"}>
                   {profile.onboardingCompleted ? "Done" : "Incomplete"}
                 </Badge>
-              </div>
-            </Card>
-
-            {/* Compact identity */}
-            <Card padding={20}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ position: "relative" }}>
-                  <Avatar
-                    src={profile.avatarUrl}
-                    name={profile.fullName}
-                    size={48}
-                    shape="circle"
-                  />
-                  <input
-                    ref={avatarInputRef}
-                    type="file"
-                    accept={UPLOAD_LIMITS.avatar.accept.join(",")}
-                    style={{ display: "none" }}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      e.target.value = "";
-                      if (file) void handleAvatarUpload(file);
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => avatarInputRef.current?.click()}
-                    disabled={upload.isPending && upload.variables?.kind === "avatar"}
-                    style={{
-                      position: "absolute",
-                      bottom: -2,
-                      right: -2,
-                      width: 20,
-                      height: 20,
-                      borderRadius: "50%",
-                      border: "2px solid var(--surface-0)",
-                      background: "var(--brand-700)",
-                      color: "#fff",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      padding: 0,
-                      lineHeight: 1,
-                    }}
-                  >
-                    <Icon name="Camera" size={10} />
-                  </button>
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      fontFamily: "var(--font-text)",
-                      fontWeight: 600,
-                      fontSize: 14,
-                      color: "var(--text-strong)",
-                    }}
-                  >
-                    {profile.fullName}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "var(--font-text)",
-                      fontSize: 12,
-                      color: "var(--text-subtle)",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {profile.email}
-                  </div>
-                </div>
               </div>
             </Card>
           </div>

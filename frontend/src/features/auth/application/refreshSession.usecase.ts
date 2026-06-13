@@ -6,6 +6,7 @@
  * Returns the new access token, or null when no refresh is possible
  * (which signals the interceptor to log the user out).
  */
+import { ApiError } from "@shared/lib/transport";
 import { authService } from "../api/auth.service";
 import { useAuthStore } from "../store/auth.store";
 
@@ -23,8 +24,14 @@ export function refreshSession(): Promise<string | null> {
       });
       useAuthStore.getState().setSession(next);
       return next.accessToken;
-    } catch {
-      useAuthStore.getState().clear();
+    } catch (err) {
+      // Only end the session when the refresh token is DEFINITIVELY rejected
+      // (401/403). Transient failures — server 5xx (e.g. DB down), network,
+      // timeout — must NOT log the user out; keep the session so a later
+      // request retries once the backend recovers.
+      if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+        useAuthStore.getState().clear();
+      }
       return null;
     } finally {
       inFlight = null;

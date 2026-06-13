@@ -61,13 +61,7 @@ export function SiteFooter() {
       }}
     >
       <div className="container-page">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.4fr 1fr 1fr 1fr",
-            gap: 48,
-          }}
-        >
+        <div className="aav-footer-grid">
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             <Link
               to={routes.home}

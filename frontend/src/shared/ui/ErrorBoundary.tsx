@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
           padding: 24,
         }}
       >
-        <div style={{ maxWidth: 480, textAlign: "center" }}>
+        <div style={{ width: "100%", maxWidth: 480, textAlign: "center" }}>
           <h1
             style={{
               fontFamily: "var(--font-display)",

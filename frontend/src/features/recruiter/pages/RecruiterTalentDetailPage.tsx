@@ -21,7 +21,7 @@ export default function RecruiterTalentDetailPage() {
   const banner = resolveImageUrl(talent?.bannerUrl ?? undefined);
 
   return (
-    <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 24px" }}>
+    <div className="aav-page" style={{ maxWidth: 860 }}>
       <button
         type="button"
         onClick={() => navigate(routes.recruiterBrowseTalent)}

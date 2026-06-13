@@ -36,6 +36,12 @@
   --container-pad: 24px;
   --nav-height: 72px;
   --sidebar-width: 264px;
+  --bottom-nav-height: 60px;
+
+  /* Breakpoints (keep in sync with shared/hooks/useMediaQuery.ts). */
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
 
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);

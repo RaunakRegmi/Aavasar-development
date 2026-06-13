@@ -70,3 +70,24 @@ export function ProtectedRoute({ allow }: ProtectedRouteProps) {
 function dashboardFor(user: SessionUser): string {
   return user.role === "recruiter" ? routes.recruiterDashboard : routes.studentDashboard;
 }
+
+/**
+ * Inverse of ProtectedRoute — for the landing / log-in / sign-up routes.
+ * If a remembered session is already present (it rehydrates synchronously
+ * from localStorage on boot), send the user straight to where they belong
+ * instead of showing the marketing/auth page. This is what makes "reopen
+ * the tab → land on my dashboard" work within the 30-day remember window.
+ */
+export function GuestOnly() {
+  const authed = useIsAuthenticated();
+  const user = useCurrentUser();
+
+  if (authed && user) {
+    if (!user.onboardingCompleted) {
+      return <Navigate to={routes.onboarding} replace />;
+    }
+    return <Navigate to={dashboardFor(user)} replace />;
+  }
+
+  return <Outlet />;
+}

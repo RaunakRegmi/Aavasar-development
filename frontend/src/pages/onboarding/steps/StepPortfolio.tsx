@@ -121,7 +121,7 @@ export function StepPortfolio({ onNext, onBack }: StepPortfolioProps) {
         style={{
           fontFamily: "var(--font-display)",
           fontWeight: 700,
-          fontSize: 38,
+          fontSize: "clamp(26px, 5vw, 38px)",
           color: "var(--text-strong)",
           margin: "0 0 8px",
           letterSpacing: "-0.02em",
@@ -311,7 +311,7 @@ export function StepPortfolio({ onNext, onBack }: StepPortfolioProps) {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
             gap: "18px 24px",
           }}
         >

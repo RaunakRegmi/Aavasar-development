@@ -3,6 +3,9 @@ import { Avatar, Button, IconButton } from "@shared/ui";
 import { Icon, type IconName } from "@shared/icons";
 import { routes } from "@shared/config/routes";
 import { useCurrentUser, useLogOut } from "@features/auth";
+import { useIsMobile } from "@shared/hooks/useMediaQuery";
+import { BottomTabBar, type TabItem } from "./BottomTabBar";
+import { MobileTopBar } from "./MobileTopBar";
 
 const topLinks: ReadonlyArray<{ label: string; to: string }> = [
   { label: "Dashboard", to: routes.recruiterDashboard },
@@ -14,6 +17,14 @@ const sideItems: ReadonlyArray<{ label: string; icon: IconName; to: string }> = 
   { label: "Overview", icon: "LayoutGrid", to: routes.recruiterDashboard },
   { label: "My Gigs", icon: "Briefcase", to: routes.recruiterMyGigs },
   { label: "Applicants", icon: "Users", to: routes.recruiterApplicants },
+  { label: "Messages", icon: "Mail", to: routes.recruiterMessages },
+  { label: "Settings", icon: "Settings", to: routes.recruiterSettings },
+];
+
+const mobileTabs: ReadonlyArray<TabItem> = [
+  { label: "Home", icon: "LayoutGrid", to: routes.recruiterDashboard },
+  { label: "Talent", icon: "Users", to: routes.recruiterBrowseTalent },
+  { label: "Applicants", icon: "Inbox", to: routes.recruiterApplicants },
   { label: "Messages", icon: "Mail", to: routes.recruiterMessages },
   { label: "Settings", icon: "Settings", to: routes.recruiterSettings },
 ];
@@ -224,7 +235,45 @@ function SideNav() {
   );
 }
 
+function RecruiterMobileActions() {
+  const navigate = useNavigate();
+  return (
+    <>
+      <IconButton ariaLabel="Notifications" onClick={() => navigate(routes.recruiterNotifications)}>
+        <Icon name="Bell" size={20} />
+      </IconButton>
+      <Button
+        variant="primary"
+        size="sm"
+        iconLeft={<Icon name="Plus" size={15} />}
+        onClick={() => navigate(routes.recruiterPostGig)}
+      >
+        Post
+      </Button>
+    </>
+  );
+}
+
 export function RecruiterLayout() {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <div style={{ background: "var(--surface-page)", minHeight: "100vh" }}>
+        <MobileTopBar accountHref={routes.recruiterSettings} actions={<RecruiterMobileActions />} />
+        <main
+          style={{
+            minWidth: 0,
+            paddingBottom: "calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 8px)",
+          }}
+        >
+          <Outlet />
+        </main>
+        <BottomTabBar tabs={mobileTabs} />
+      </div>
+    );
+  }
+
   return (
     <div style={{ background: "var(--surface-page)", minHeight: "100vh" }}>
       <TopNav />

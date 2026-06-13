@@ -61,7 +61,7 @@ export default function PricingPage() {
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 700,
-            fontSize: 38,
+            fontSize: "clamp(26px, 5vw, 38px)",
             letterSpacing: "-0.02em",
             color: "var(--text-strong)",
             margin: "0 0 12px",
@@ -85,7 +85,7 @@ export default function PricingPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
           gap: 24,
           maxWidth: 1000,
           margin: "0 auto",

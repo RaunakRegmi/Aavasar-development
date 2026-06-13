@@ -30,13 +30,15 @@ import { useQueryClient } from "@tanstack/react-query";
 registerTokenProvider(selectAccessToken);
 
 /**
- * The auto-logout behavior is enriched (clear query cache + toast) once
- * React mounts via AuthBoot's effect. Until then a store-only clear is the
- * safe default. We reassign this variable rather than re-installing the
+ * Auto-logout finalization, enriched (clear query cache + toast) once React
+ * mounts via AuthBoot's effect. `refreshSession()` itself owns the decision
+ * to clear the session (only on a definitive 401/403), so the default here
+ * is a no-op — clearing unconditionally would log the user out on a
+ * transient failure. We reassign this variable rather than re-installing the
  * interceptor, so `wireRefresh` is called exactly once (at module load).
  */
 let onAuthFailure: () => void = () => {
-  useAuthStore.getState().clear();
+  /* refreshSession owns the clear decision; nothing to finalize pre-React. */
 };
 wireRefresh(refreshSession, () => onAuthFailure());
 
@@ -67,7 +69,11 @@ export function AuthBoot({ children }: { children: ReactNode }) {
     //       load (see top of file). Here we just enrich the logout handler
     //       now that the query client + toast are available.
     onAuthFailure = () => {
-      useAuthStore.getState().clear();
+      // refreshSession() owns the clear decision: it clears the store ONLY
+      // on a definitive auth rejection (401/403). If a session still exists
+      // here, the refresh failed transiently (server down / network) — keep
+      // the user logged in and don't toast. Otherwise finalize the logout UX.
+      if (useAuthStore.getState().session) return;
       qc.clear();
       toast.error("Signed out", {
         description: "Your session ended. Please log in to continue.",
@@ -84,7 +90,11 @@ export function AuthBoot({ children }: { children: ReactNode }) {
     if (booted && isSessionExpired()) {
       if (booted.refreshToken) {
         void refreshSession().then((token) => {
-          if (!token) {
+          // refreshSession clears the store ONLY on a definitive auth
+          // failure (401/403). A transient failure (server down / network)
+          // returns null but KEEPS the session — so only warn "expired" if
+          // we were actually logged out. Otherwise it's a false alarm.
+          if (!token && !useAuthStore.getState().session) {
             toast.info("Your session expired", {
               description: "Please sign in again to continue.",
             });

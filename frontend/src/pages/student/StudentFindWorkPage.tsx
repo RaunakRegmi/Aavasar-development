@@ -66,14 +66,14 @@ export default function StudentFindWorkPage() {
   const totalPages = Math.max(1, Math.ceil(total / 12));
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1180 }}>
+    <div className="aav-page" style={{ maxWidth: 1180 }}>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 700,
-            fontSize: 38,
+            fontSize: "clamp(26px, 5vw, 38px)",
             color: "var(--text-strong)",
             margin: 0,
             letterSpacing: "-0.02em",
@@ -101,9 +101,9 @@ export default function StudentFindWorkPage() {
       {/* Filters */}
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr auto auto",
-          gap: 16,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 12,
           alignItems: "center",
           marginBottom: 24,
         }}
@@ -113,6 +113,7 @@ export default function StudentFindWorkPage() {
           leading={<Icon name="Search" size={18} />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          containerStyle={{ flex: "1 1 220px" }}
         />
         <SegmentedControl<LocationFilter>
           value={location}
@@ -160,13 +161,7 @@ export default function StudentFindWorkPage() {
           </div>
         </Card>
       ) : isLoading ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 16,
-          }}
-        >
+        <div className="aav-cards">
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
               <Skeleton width="40%" height={12} />
@@ -222,10 +217,8 @@ export default function StudentFindWorkPage() {
       ) : (
         <>
           <div
+            className="aav-cards"
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 16,
               opacity: isFetching ? 0.7 : 1,
               transition: "opacity var(--dur-fast) var(--ease-standard)",
             }}

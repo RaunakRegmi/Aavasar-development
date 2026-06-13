@@ -190,7 +190,7 @@ export default function CompanyRegistrationPage() {
   const docUploading = upload.isPending && upload.variables?.kind === "companyDocument";
 
   return (
-    <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 24px" }}>
+    <div className="aav-page" style={{ maxWidth: 720 }}>
       <div style={{ marginBottom: 32 }}>
         <h1 style={{
           fontFamily: "var(--font-display)",
@@ -212,7 +212,7 @@ export default function CompanyRegistrationPage() {
       </div>
 
       {/* Section stepper */}
-      <div style={{ display: "flex", gap: 32, marginBottom: 32, borderBottom: "1px solid var(--border-default)", paddingBottom: 12 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 24px", marginBottom: 32, borderBottom: "1px solid var(--border-default)", paddingBottom: 12 }}>
         {sectionIndicator("info")}
         {sectionIndicator("media")}
         {sectionIndicator("review")}

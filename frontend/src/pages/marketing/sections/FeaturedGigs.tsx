@@ -69,13 +69,7 @@ export function FeaturedGigs({ onApplyUnauth, onViewAll }: FeaturedGigsProps) {
           View all →
         </button>
       </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1.6fr 1fr",
-          gap: 16,
-        }}
-      >
+      <div className="aav-split">
         {premium && (
           <Card
             padding={0}

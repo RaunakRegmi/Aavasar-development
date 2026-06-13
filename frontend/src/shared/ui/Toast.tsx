@@ -164,12 +164,12 @@ function Toaster({
       style={{
         position: "fixed",
         bottom: 24,
-        right: 24,
+        right: 16,
         zIndex: 9999,
         display: "flex",
         flexDirection: "column",
         gap: 10,
-        maxWidth: 380,
+        width: "min(calc(100vw - 32px), 380px)",
         pointerEvents: "none",
       }}
     >

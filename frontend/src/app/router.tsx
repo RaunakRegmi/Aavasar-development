@@ -1,7 +1,7 @@
 import { lazy, Suspense, type ReactNode } from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { routes } from "@shared/config/routes";
-import { ProtectedRoute } from "./routes/ProtectedRoute";
+import { ProtectedRoute, GuestOnly } from "./routes/ProtectedRoute";
 import { MarketingLayout } from "@shared/layouts/MarketingLayout";
 import { StudentLayout } from "@shared/layouts/StudentLayout";
 import { RecruiterLayout } from "@shared/layouts/RecruiterLayout";
@@ -51,9 +51,16 @@ const router = createBrowserRouter([
   {
     element: <MarketingLayout />,
     children: [
-      { path: routes.home, element: withSuspense(<LandingPage />) },
-      { path: routes.signUp, element: withSuspense(<SignUpPage />) },
-      { path: routes.logIn, element: withSuspense(<LoginPage />) },
+      // Already-signed-in users skip the landing / auth pages and go
+      // straight to their dashboard (remembered session → auto-redirect).
+      {
+        element: <GuestOnly />,
+        children: [
+          { path: routes.home, element: withSuspense(<LandingPage />) },
+          { path: routes.signUp, element: withSuspense(<SignUpPage />) },
+          { path: routes.logIn, element: withSuspense(<LoginPage />) },
+        ],
+      },
       { path: routes.forgotPassword, element: withSuspense(<ForgotPasswordPage />) },
       { path: routes.resetPassword, element: withSuspense(<ResetPasswordPage />) },
 

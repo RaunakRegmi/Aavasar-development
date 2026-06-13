@@ -94,7 +94,7 @@ export type SignUpFormValues = z.infer<typeof SignUpFormSchema>;
 export const LogInRequestSchema = z.object({
   email: z.string().email("Enter a valid email address."),
   password: z.string().min(1, "Password is required."),
-  remember: z.boolean().optional().default(false),
+  remember: z.boolean().optional().default(true),
 });
 export type LogInRequest = z.infer<typeof LogInRequestSchema>;
 

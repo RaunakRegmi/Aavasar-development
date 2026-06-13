@@ -61,7 +61,7 @@ export default function StudentGigDetailPage() {
 
   if (isLoading) {
     return (
-      <div style={{ padding: "32px 40px", maxWidth: 1080, margin: "0 auto" }}>
+      <div className="aav-page" style={{ maxWidth: 1080 }}>
         <Skeleton width={200} height={12} />
         <div style={{ height: 16 }} />
         <Skeleton width="60%" height={28} />
@@ -73,7 +73,7 @@ export default function StudentGigDetailPage() {
 
   if (isError || !gig) {
     return (
-      <div style={{ padding: "32px 40px", maxWidth: 1080, margin: "0 auto" }}>
+      <div className="aav-page" style={{ maxWidth: 1080 }}>
         <Card>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <Icon name="AlertCircle" size={20} style={{ color: "var(--danger-500)" }} />
@@ -98,7 +98,7 @@ export default function StudentGigDetailPage() {
   const isActive = gig.status === "active";
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1080, margin: "0 auto" }}>
+    <div className="aav-page" style={{ maxWidth: 1080 }}>
       <button
         type="button"
         onClick={() => navigate(routes.studentFindWork)}
@@ -121,7 +121,7 @@ export default function StudentGigDetailPage() {
         Back to gigs
       </button>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24, alignItems: "start" }}>
+      <div className="aav-detail">
         {/* ---------- Left: content ---------- */}
         <div style={{ display: "grid", gap: 20, minWidth: 0 }}>
           <Card>
@@ -174,7 +174,7 @@ export default function StudentGigDetailPage() {
         </div>
 
         {/* ---------- Right: sticky apply panel ---------- */}
-        <div style={{ position: "sticky", top: 24, display: "grid", gap: 16 }}>
+        <div className="aav-detail-aside" style={{ position: "sticky", top: 24, display: "grid", gap: 16 }}>
           <Card>
             <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 26, color: "var(--success-600)" }}>
               {rate}

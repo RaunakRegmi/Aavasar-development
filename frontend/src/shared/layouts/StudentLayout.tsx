@@ -1,8 +1,19 @@
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
-import { Button } from "@shared/ui";
+import { Button, IconButton } from "@shared/ui";
 import { Icon, type IconName } from "@shared/icons";
 import { routes } from "@shared/config/routes";
 import { useLogOut } from "@features/auth";
+import { useIsMobile } from "@shared/hooks/useMediaQuery";
+import { BottomTabBar, type TabItem } from "./BottomTabBar";
+import { MobileTopBar } from "./MobileTopBar";
+
+const mobileTabs: ReadonlyArray<TabItem> = [
+  { label: "Home", icon: "LayoutGrid", to: routes.studentDashboard },
+  { label: "Find Work", icon: "Search", to: routes.studentFindWork },
+  { label: "My Gigs", icon: "Briefcase", to: routes.studentMyGigs },
+  { label: "Messages", icon: "MessageSquare", to: routes.studentMessages },
+  { label: "Profile", icon: "User", to: routes.studentProfile },
+];
 
 interface NavItem {
   label: string;
@@ -174,7 +185,35 @@ function Sidebar() {
   );
 }
 
+function StudentMobileActions() {
+  const navigate = useNavigate();
+  return (
+    <IconButton ariaLabel="Notifications" onClick={() => navigate(routes.studentNotifications)}>
+      <Icon name="Bell" size={20} />
+    </IconButton>
+  );
+}
+
 export function StudentLayout() {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <div style={{ minHeight: "100vh", background: "var(--surface-page)" }}>
+        <MobileTopBar accountHref={routes.studentProfile} actions={<StudentMobileActions />} />
+        <main
+          style={{
+            minWidth: 0,
+            paddingBottom: "calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 8px)",
+          }}
+        >
+          <Outlet />
+        </main>
+        <BottomTabBar tabs={mobileTabs} />
+      </div>
+    );
+  }
+
   return (
     <div
       style={{

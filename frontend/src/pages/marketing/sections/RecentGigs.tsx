@@ -33,7 +33,7 @@ export function RecentGigs({ onApplyUnauth, onSeeMore }: RecentGigsProps) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr",
+          gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
           gap: 20,
         }}
       >

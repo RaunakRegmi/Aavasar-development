@@ -11,8 +11,10 @@ import { useCurrentUser } from "@features/auth";
 import {
   recruiterConversationPath,
   studentConversationPath,
+  routes,
 } from "@shared/config/routes";
 import { formatShort } from "@shared/lib/utils";
+import { useIsMobile } from "@shared/hooks/useMediaQuery";
 import { useConversations, useMessages, useSendMessage, useMarkRead } from "../hooks/useMessaging";
 import type { Conversation } from "../contracts/message.contract";
 
@@ -20,28 +22,43 @@ export default function MessagesPage() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const user = useCurrentUser();
+  const isMobile = useIsMobile();
   const isRecruiter = user?.role === "recruiter";
   const convPath = (id: string) =>
     isRecruiter ? recruiterConversationPath(id) : studentConversationPath(id);
+  const listPath = isRecruiter ? routes.recruiterMessages : routes.studentMessages;
 
   const conversations = useConversations();
   const list = conversations.data ?? [];
 
-  // Selected = route param, else first conversation.
-  const selectedId = conversationId ?? list[0]?.id;
+  // On mobile show ONE pane: the thread when a conversation is in the URL,
+  // otherwise the inbox. On desktop both panes show side by side; the
+  // selected thread defaults to the first conversation.
+  const selectedId = conversationId ?? (isMobile ? undefined : list[0]?.id);
   const selected = useMemo(
     () => list.find((c) => c.id === selectedId),
     [list, selectedId],
   );
+  const showInbox = !isMobile || !conversationId;
+  const showThread = !isMobile || !!conversationId;
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - var(--nav-height, 0px))", minHeight: 480 }}>
+    <div
+      style={{
+        display: "flex",
+        height: isMobile
+          ? "calc(100dvh - 56px - var(--bottom-nav-height) - env(safe-area-inset-bottom))"
+          : "calc(100vh - var(--nav-height, 0px))",
+        minHeight: isMobile ? 320 : 480,
+      }}
+    >
       {/* Inbox */}
+      {showInbox ? (
       <aside
         style={{
-          width: 320,
+          width: isMobile ? "100%" : 320,
           flexShrink: 0,
-          borderRight: "1px solid var(--border-default)",
+          borderRight: isMobile ? "none" : "1px solid var(--border-default)",
           overflowY: "auto",
           background: "var(--surface-0)",
         }}
@@ -64,6 +81,27 @@ export default function MessagesPage() {
               </div>
             ))}
           </div>
+        ) : conversations.isError ? (
+          <div style={{ padding: "20px", display: "grid", gap: 12, justifyItems: "start" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-text)", fontSize: 14, color: "var(--text-strong)", fontWeight: 600 }}>
+              <Icon name="AlertCircle" size={18} style={{ color: "var(--danger-500)" }} />
+              Couldn&apos;t load messages
+            </div>
+            <button
+              type="button"
+              onClick={() => conversations.refetch()}
+              style={{
+                all: "unset",
+                cursor: "pointer",
+                fontFamily: "var(--font-text)",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "var(--brand-700)",
+              }}
+            >
+              Retry
+            </button>
+          </div>
         ) : list.length === 0 ? (
           <div style={{ padding: "24px 20px", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--text-muted)" }}>
             {isRecruiter
@@ -83,11 +121,18 @@ export default function MessagesPage() {
           </div>
         )}
       </aside>
+      ) : null}
 
       {/* Thread */}
+      {showThread ? (
       <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", background: "var(--surface-page)" }}>
         {selected ? (
-          <Thread key={selected.id} conv={selected} meId={user?.id ?? ""} />
+          <Thread
+            key={selected.id}
+            conv={selected}
+            meId={user?.id ?? ""}
+            onBack={isMobile ? () => navigate(listPath) : undefined}
+          />
         ) : (
           <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <div style={{ textAlign: "center", color: "var(--text-muted)", fontFamily: "var(--font-text)" }}>
@@ -97,6 +142,7 @@ export default function MessagesPage() {
           </div>
         )}
       </main>
+      ) : null}
     </div>
   );
 }
@@ -155,7 +201,7 @@ function InboxRow({ conv, active, onClick }: { conv: Conversation; active: boole
   );
 }
 
-function Thread({ conv, meId }: { conv: Conversation; meId: string }) {
+function Thread({ conv, meId, onBack }: { conv: Conversation; meId: string; onBack?: () => void }) {
   const messages = useMessages(conv.id);
   const send = useSendMessage(conv.id);
   const markRead = useMarkRead();
@@ -191,11 +237,21 @@ function Thread({ conv, meId }: { conv: Conversation; meId: string }) {
           display: "flex",
           alignItems: "center",
           gap: 12,
-          padding: "16px 24px",
+          padding: "12px 16px",
           borderBottom: "1px solid var(--border-default)",
           background: "var(--surface-0)",
         }}
       >
+        {onBack ? (
+          <button
+            type="button"
+            aria-label="Back to conversations"
+            onClick={onBack}
+            style={{ background: "transparent", border: "none", padding: 4, cursor: "pointer", color: "var(--text-strong)", display: "inline-flex" }}
+          >
+            <Icon name="ChevronLeft" size={22} />
+          </button>
+        ) : null}
         <Avatar src={conv.otherParticipant.avatarUrl ?? undefined} name={conv.otherParticipant.fullName} size={40} />
         <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "var(--text-strong)" }}>
           {conv.otherParticipant.fullName}

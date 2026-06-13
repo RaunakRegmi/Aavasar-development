@@ -213,7 +213,7 @@ export default function PostGigPage() {
   };
 
   return (
-    <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 24px" }}>
+    <div className="aav-page" style={{ maxWidth: 720 }}>
       <div style={{ marginBottom: 32 }}>
         <h1
           style={{
@@ -235,7 +235,8 @@ export default function PostGigPage() {
       <div
         style={{
           display: "flex",
-          gap: 32,
+          flexWrap: "wrap",
+          gap: "8px 24px",
           marginBottom: 32,
           borderBottom: "1px solid var(--border-default)",
           paddingBottom: 12,

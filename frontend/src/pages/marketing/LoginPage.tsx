@@ -56,7 +56,7 @@ export default function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LogInRequest>({
     resolver: zodResolver(LogInRequestSchema),
-    defaultValues: { email: "", password: "", remember: false },
+    defaultValues: { email: "", password: "", remember: true },
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -244,7 +244,7 @@ export default function LoginPage() {
           </span>
           <span style={{ flex: 1, height: 1, background: "var(--border-default)" }} />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }}>
           {OAUTH_PROVIDERS.map(({ name, provider }) => (
             <Button
               key={provider}

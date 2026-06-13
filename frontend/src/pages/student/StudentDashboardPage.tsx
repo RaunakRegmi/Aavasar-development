@@ -20,7 +20,7 @@ export default function StudentDashboardPage() {
   const firstName = user?.fullName.split(" ")[0] ?? "there";
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1180 }}>
+    <div className="aav-page" style={{ maxWidth: 1180 }}>
       {/* Header */}
       <div
         style={{
@@ -42,7 +42,7 @@ export default function StudentDashboardPage() {
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 700,
-                fontSize: 38,
+                fontSize: "clamp(26px, 5vw, 38px)",
                 color: "var(--text-strong)",
                 margin: 0,
                 letterSpacing: "-0.02em",
@@ -75,7 +75,7 @@ export default function StudentDashboardPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
           gap: 16,
           marginBottom: 28,
         }}
@@ -109,13 +109,7 @@ export default function StudentDashboardPage() {
       </div>
 
       {/* Two columns */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1.7fr 1fr",
-          gap: 28,
-        }}
-      >
+      <div className="aav-split">
         {/* Left column */}
         <div>
           <div
@@ -265,7 +259,7 @@ export default function StudentDashboardPage() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
               gap: 16,
             }}
           >

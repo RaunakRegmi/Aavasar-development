@@ -65,7 +65,7 @@ export default function RecruiterMyGigsPage() {
   };
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1000 }}>
+    <div className="aav-page" style={{ maxWidth: 1000 }}>
       {/* Header */}
       <div
         style={{
@@ -80,7 +80,7 @@ export default function RecruiterMyGigsPage() {
             style={{
               fontFamily: "var(--font-display)",
               fontWeight: 700,
-              fontSize: 38,
+              fontSize: "clamp(26px, 5vw, 38px)",
               color: "var(--text-strong)",
               margin: 0,
               letterSpacing: "-0.02em",

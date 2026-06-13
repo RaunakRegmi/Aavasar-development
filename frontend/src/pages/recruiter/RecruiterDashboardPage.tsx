@@ -41,7 +41,7 @@ export default function RecruiterDashboardPage() {
   const top = applicants.data?.[0];
 
   return (
-    <div style={{ padding: "32px 40px" }}>
+    <div className="aav-page">
       <div
         style={{
           display: "flex",
@@ -55,7 +55,7 @@ export default function RecruiterDashboardPage() {
             style={{
               fontFamily: "var(--font-display)",
               fontWeight: 700,
-              fontSize: 38,
+              fontSize: "clamp(26px, 5vw, 38px)",
               color: "var(--text-strong)",
               margin: 0,
               letterSpacing: "-0.02em",
@@ -120,7 +120,7 @@ export default function RecruiterDashboardPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
           gap: 16,
           marginBottom: 28,
         }}
@@ -157,7 +157,7 @@ export default function RecruiterDashboardPage() {
         />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr", gap: 28 }}>
+      <div className="aav-split">
         <Card padding={0}>
           <div
             style={{

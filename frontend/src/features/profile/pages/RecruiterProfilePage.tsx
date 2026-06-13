@@ -118,13 +118,13 @@ export default function RecruiterProfilePage() {
   };
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1180, margin: "0 auto" }}>
+    <div className="aav-page" style={{ maxWidth: 1180 }}>
       <ProfileBanner user={profile} company={company} variant="brand" />
 
       <TabBar tab={tab} onTab={setTab} />
 
       {tab === "overview" ? (
-        <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 24 }}>
+        <div className="aav-split">
           {/* ---- Left: Company panel + Posted Gigs ---- */}
           <div style={{ display: "grid", gap: 20 }}>
             {company ? (

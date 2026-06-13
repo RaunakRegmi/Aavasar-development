@@ -12,7 +12,7 @@ export default function HowItWorksPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
             gap: 32,
             maxWidth: 920,
             margin: "0 auto 56px",

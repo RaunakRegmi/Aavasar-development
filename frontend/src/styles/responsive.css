@@ -1,0 +1,113 @@
+/* ============================================================
+   Aavasar — responsive utility classes.
+
+   The app is inline-style-first; these classes carry the few things
+   inline styles can't express (media queries) for the recurring page
+   layouts. Pages keep their own `maxWidth`/colors inline and add one of
+   these classes for the responsive grid/padding behaviour.
+
+   Breakpoints (keep in sync with shared/hooks/useMediaQuery.ts):
+     sm 640px · md 768px · lg 1024px
+   ============================================================ */
+
+/* Page wrapper: centered, comfortable desktop padding that tightens on
+   phones. Pages set their own max-width inline; this only owns padding. */
+.aav-page {
+  margin: 0 auto;
+  padding: 32px 40px;
+}
+@media (max-width: 1024px) {
+  .aav-page { padding: 28px 28px; }
+}
+@media (max-width: 768px) {
+  .aav-page { padding: 20px 16px; }
+}
+
+/* Card grid that reflows on its own (3 → 2 → 1) with no breakpoint. */
+.aav-cards {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* Main + side rail. Stacks below 900px. */
+.aav-split {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1.6fr 1fr;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .aav-split { grid-template-columns: 1fr; }
+}
+
+/* KPI / stat strip — auto-fits 4 → 2 → 1 by available width. */
+.aav-kpi {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+/* Detail page: content + fixed-ish aside that stacks (and un-stickies)
+   on small screens. Put `.aav-detail-aside` on the right column. */
+.aav-detail {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr 320px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .aav-detail { grid-template-columns: 1fr; }
+  .aav-detail-aside { position: static !important; top: auto !important; }
+}
+
+/* Simple N-up grids that collapse to a single column on phones. */
+.aav-grid-2,
+.aav-grid-3 {
+  display: grid;
+  gap: 16px;
+}
+.aav-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.aav-grid-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 860px) {
+  .aav-grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .aav-grid-2,
+  .aav-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* Marketing footer: 4 columns → 2 → 1. */
+.aav-footer-grid {
+  display: grid;
+  gap: 48px;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+}
+@media (max-width: 768px) {
+  .aav-footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 480px) {
+  .aav-footer-grid { grid-template-columns: 1fr; }
+}
+
+/* A flex row of actions/filters that wraps instead of overflowing. */
+.aav-row-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* On phones, make the children of this container go full width and stack
+   (used for action-button rows like Accept / Reject / Message). */
+@media (max-width: 640px) {
+  .aav-stack-sm { flex-direction: column; align-items: stretch; }
+  .aav-stack-sm > * { width: 100%; }
+}
+
+/* Hide on mobile / desktop helpers (display-only; layout uses the hook). */
+@media (max-width: 768px) {
+  .aav-hide-mobile { display: none !important; }
+}
+@media (min-width: 769px) {
+  .aav-only-mobile { display: none !important; }
+}

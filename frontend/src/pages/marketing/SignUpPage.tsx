@@ -225,7 +225,7 @@ export default function SignUpPage() {
           </span>
           <span style={{ flex: 1, height: 1, background: "var(--border-default)" }} />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }}>
           {OAUTH_PROVIDERS.map(({ name, provider }) => (
             <Button
               key={provider}

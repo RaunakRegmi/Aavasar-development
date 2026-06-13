@@ -63,14 +63,14 @@ export default function BrowseTalentPage() {
     setSkills((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1180 }}>
+    <div className="aav-page" style={{ maxWidth: 1180 }}>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 700,
-            fontSize: 38,
+            fontSize: "clamp(26px, 5vw, 38px)",
             color: "var(--text-strong)",
             margin: 0,
             letterSpacing: "-0.02em",
@@ -136,7 +136,7 @@ export default function BrowseTalentPage() {
           </div>
         </Card>
       ) : isLoading ? (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
               <div style={{ display: "flex", gap: 14 }}>
@@ -191,7 +191,7 @@ export default function BrowseTalentPage() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
               gap: 16,
               opacity: isFetching ? 0.7 : 1,
               transition: "opacity var(--dur-fast) var(--ease-standard)",

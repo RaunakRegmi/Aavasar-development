@@ -58,7 +58,7 @@ export function HowItWorks() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
           gap: 64,
           maxWidth: 920,
           margin: "0 auto",

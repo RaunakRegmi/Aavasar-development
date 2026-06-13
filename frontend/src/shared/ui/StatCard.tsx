@@ -114,7 +114,7 @@ export function StatCard({
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 700,
-            fontSize: 32,
+            fontSize: "clamp(24px, 6vw, 32px)",
             lineHeight: 1.1,
             color: "var(--text-strong)",
             fontVariantNumeric: "tabular-nums",

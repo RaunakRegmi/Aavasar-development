@@ -33,7 +33,7 @@ export default function ApplicantDetailPage() {
 
   if (isLoading) {
     return (
-      <div style={{ padding: "32px 40px", maxWidth: 720 }}>
+      <div className="aav-page" style={{ maxWidth: 720 }}>
         <Skeleton width={160} height={12} />
         <div style={{ height: 20 }} />
         <Skeleton width={200} height={24} />
@@ -45,7 +45,7 @@ export default function ApplicantDetailPage() {
 
   if (isError || !data) {
     return (
-      <div style={{ padding: "32px 40px", maxWidth: 720 }}>
+      <div className="aav-page" style={{ maxWidth: 720 }}>
         <Card>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <Icon name="AlertCircle" size={20} style={{ color: "var(--danger-500)" }} />
@@ -88,7 +88,7 @@ export default function ApplicantDetailPage() {
   };
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 720 }}>
+    <div className="aav-page" style={{ maxWidth: 720 }}>
       <button
         type="button"
         onClick={() => navigate(routes.recruiterApplicants)}
