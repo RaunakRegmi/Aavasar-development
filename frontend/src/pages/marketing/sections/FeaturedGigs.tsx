@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Badge, Button, Card, Tag } from "@shared/ui";
 import { Icon } from "@shared/icons";
 import { useFeaturedGigs } from "@features/gigs";
@@ -14,6 +15,7 @@ interface FeaturedGigsProps {
 
 export function FeaturedGigs({ onApplyUnauth, onViewAll }: FeaturedGigsProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { data: gigs } = useFeaturedGigs();
   const premium = gigs?.[0];
   const calm = gigs?.[1];
@@ -38,7 +40,7 @@ export function FeaturedGigs({ onApplyUnauth, onViewAll }: FeaturedGigsProps) {
               margin: "0 0 4px",
             }}
           >
-            Featured Gigs
+            {t("landing.featured.title")}
           </h2>
           <p
             style={{
@@ -48,7 +50,7 @@ export function FeaturedGigs({ onApplyUnauth, onViewAll }: FeaturedGigsProps) {
               margin: 0,
             }}
           >
-            Log in to apply for these top-tier opportunities.
+            {t("landing.featured.subtitle")}
           </p>
         </div>
         <button
@@ -66,7 +68,7 @@ export function FeaturedGigs({ onApplyUnauth, onViewAll }: FeaturedGigsProps) {
             padding: 0,
           }}
         >
-          View all →
+          {t("common.viewAll")} →
         </button>
       </div>
       <div className="aav-split">
@@ -95,7 +97,7 @@ export function FeaturedGigs({ onApplyUnauth, onViewAll }: FeaturedGigsProps) {
                   marginBottom: 10,
                 }}
               >
-                <Badge tone="premium">Premium</Badge>
+                <Badge tone="premium">{t("landing.featured.premiumBadge")}</Badge>
                 <span
                   style={{
                     fontFamily: "var(--font-text)",
@@ -141,7 +143,7 @@ export function FeaturedGigs({ onApplyUnauth, onViewAll }: FeaturedGigsProps) {
                   }}
                   iconLeft={<Icon name="Lock" size={15} />}
                 >
-                  Log in to Apply
+                  {t("landing.featured.logInToApply")}
                 </Button>
               </div>
             </div>
@@ -221,7 +223,7 @@ export function FeaturedGigs({ onApplyUnauth, onViewAll }: FeaturedGigsProps) {
                   onApplyUnauth();
                 }}
               >
-                Sign Up to Apply
+                {t("landing.featured.signUpToApply")}
               </Button>
             </div>
           </Card>

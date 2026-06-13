@@ -74,7 +74,7 @@ export const mockFeaturedGigs: Gig[] = [
     description:
       "Help us shape the future of learning by designing a cohesive, accessible, and vibrant mobile interface for K-12 students.",
     postedAs: "company",
-    poster: { id: "c1", name: "Acme EdTech", avatarUrl: null, verified: true },
+    poster: { id: "c1", name: "Sajilo EdTech", avatarUrl: null, verified: true },
     location: "remote",
     duration: "2 Weeks",
     payKind: "hourly",
@@ -89,9 +89,9 @@ export const mockFeaturedGigs: Gig[] = [
     title: "Advanced Calculus Tutor",
     category: "TUTORING",
     description:
-      "Tutoring for high-school senior preparing for AP exams. 3 hours per week at the City Library.",
+      "Tutoring for a +2 senior preparing for NEB board exams. 3 hours per week at Patan Community Library.",
     postedAs: "company",
-    poster: { id: "c2", name: "City Library", avatarUrl: null, verified: false },
+    poster: { id: "c2", name: "Patan Community Library", avatarUrl: null, verified: false },
     location: "onsite",
     duration: "Ongoing",
     payKind: "hourly",
@@ -110,7 +110,7 @@ export const mockRecentGigs: Gig[] = [
     category: "PHOTOGRAPHY",
     description: "Looking for a student photographer to cover a 4-hour campus event.",
     postedAs: "company",
-    poster: { id: "c3", name: "Acme Events", avatarUrl: null, verified: true },
+    poster: { id: "c3", name: "Sagarmatha Events", avatarUrl: null, verified: true },
     location: "onsite",
     duration: "4 Hours",
     payKind: "hourly",
@@ -126,7 +126,7 @@ export const mockRecentGigs: Gig[] = [
     category: "DATA ENTRY",
     description: "Updating product descriptions for a local retail e-commerce store.",
     postedAs: "company",
-    poster: { id: "c4", name: "Urban Goods", avatarUrl: null, verified: false },
+    poster: { id: "c4", name: "Bazar Sansar", avatarUrl: null, verified: false },
     location: "remote",
     duration: "3 Days",
     payKind: "hourly",
@@ -165,7 +165,7 @@ export const mockActiveGigs: ActiveGigSummary[] = [
   {
     id: "ag1",
     title: "Frontend UI Bug Fixes",
-    company: "Acme Tech Solutions",
+    company: "Himalayan Tech Solutions",
     status: "active",
     statusLabel: "In Progress",
     milestone: "Next Milestone: Unit Testing (Oct 29)",
@@ -174,7 +174,7 @@ export const mockActiveGigs: ActiveGigSummary[] = [
   {
     id: "ag2",
     title: "Brand Identity Design",
-    company: "Nova Creative",
+    company: "Lalitpur Creative",
     status: "submitted",
     statusLabel: "Submitted",
     milestone: "Status: Under Review",
@@ -185,7 +185,7 @@ export const mockActiveGigs: ActiveGigSummary[] = [
 export const mockUpcoming: UpcomingEvent[] = [
   {
     id: "ev1",
-    title: "Interview: Acme Events",
+    title: "Interview: Sagarmatha Events",
     occursAt: "2024-10-28T10:30:00+05:45",
     subtitle: "10:30 AM · Video Call",
   },

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Icon, type IconName } from "@shared/icons";
 
 interface Column {
@@ -6,28 +7,29 @@ interface Column {
   steps: ReadonlyArray<[string, string]>;
 }
 
-const cols: ReadonlyArray<Column> = [
-  {
-    icon: "GraduationCap",
-    heading: "For Students",
-    steps: [
-      ["Create Your Profile", "Highlight your skills, portfolio, and education to stand out to employers."],
-      ["Find Relevant Gigs", "Browse thousands of student-specific tasks and apply with one click."],
-      ["Get Paid Securely", "Complete your tasks and receive payments directly to your account. No hidden fees."],
-    ],
-  },
-  {
-    icon: "Building2",
-    heading: "For Businesses",
-    steps: [
-      ["Post a Task", "Define your project, set your budget, and post in minutes to reach top student talent."],
-      ["Review Top Talent", "Filter through vetted applications and choose the best fit for your needs."],
-      ["Scale Your Team", "Get quality work done efficiently while helping students build their portfolios."],
-    ],
-  },
-];
-
 export function HowItWorks() {
+  const { t } = useTranslation();
+  const cols: ReadonlyArray<Column> = [
+    {
+      icon: "GraduationCap",
+      heading: t("landing.howItWorks.forStudents"),
+      steps: [
+        [t("landing.howItWorks.students.step1Title"), t("landing.howItWorks.students.step1Body")],
+        [t("landing.howItWorks.students.step2Title"), t("landing.howItWorks.students.step2Body")],
+        [t("landing.howItWorks.students.step3Title"), t("landing.howItWorks.students.step3Body")],
+      ],
+    },
+    {
+      icon: "Building2",
+      heading: t("landing.howItWorks.forBusinesses"),
+      steps: [
+        [t("landing.howItWorks.businesses.step1Title"), t("landing.howItWorks.businesses.step1Body")],
+        [t("landing.howItWorks.businesses.step2Title"), t("landing.howItWorks.businesses.step2Body")],
+        [t("landing.howItWorks.businesses.step3Title"), t("landing.howItWorks.businesses.step3Body")],
+      ],
+    },
+  ];
+
   return (
     <section className="container-page" style={{ paddingBottom: 64 }}>
       <div style={{ textAlign: "center", marginBottom: 40 }}>
@@ -41,7 +43,7 @@ export function HowItWorks() {
             margin: "0 0 10px",
           }}
         >
-          Seamless Experience for Everyone
+          {t("landing.howItWorks.title")}
         </h2>
         <p
           style={{
@@ -51,8 +53,7 @@ export function HowItWorks() {
             margin: 0,
           }}
         >
-          Whether you&apos;re looking to earn or looking to hire, Aavasar makes it
-          simple, fast, and secure.
+          {t("landing.howItWorks.subtitle")}
         </p>
       </div>
       <div

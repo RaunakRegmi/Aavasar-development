@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button, Card, Tag } from "@shared/ui";
 import { useGigList } from "@features/gigs";
 import { formatNprFixed, formatRupeeRate } from "@shared/lib/utils";
@@ -11,6 +12,7 @@ interface RecentGigsProps {
 
 export function RecentGigs({ onApplyUnauth, onSeeMore }: RecentGigsProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { data } = useGigList({});
   const gigs = data?.items ?? [];
 
@@ -28,7 +30,7 @@ export function RecentGigs({ onApplyUnauth, onSeeMore }: RecentGigsProps) {
           margin: "0 0 20px",
         }}
       >
-        Recently Added Gigs
+        {t("landing.recent.title")}
       </h2>
       <div
         style={{
@@ -124,7 +126,7 @@ export function RecentGigs({ onApplyUnauth, onSeeMore }: RecentGigsProps) {
                     color: "var(--text-subtle)",
                   }}
                 >
-                  By {g.poster.name}
+                  {t("landing.recent.by")} {g.poster.name}
                 </span>
                 <button
                   type="button"
@@ -144,7 +146,7 @@ export function RecentGigs({ onApplyUnauth, onSeeMore }: RecentGigsProps) {
                     padding: 0,
                   }}
                 >
-                  Apply →
+                  {t("common.apply")} →
                 </button>
               </div>
             </Card>
@@ -153,7 +155,7 @@ export function RecentGigs({ onApplyUnauth, onSeeMore }: RecentGigsProps) {
       </div>
       <div style={{ textAlign: "center", marginTop: 32 }}>
         <Button variant="outline" onClick={onSeeMore}>
-          See 50+ More Opportunities
+          {t("landing.recent.moreCta")}
         </Button>
       </div>
     </section>

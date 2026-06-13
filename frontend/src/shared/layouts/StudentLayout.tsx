@@ -1,38 +1,33 @@
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button, IconButton } from "@shared/ui";
 import { Icon, type IconName } from "@shared/icons";
 import { routes } from "@shared/config/routes";
 import { useLogOut } from "@features/auth";
 import { useIsMobile } from "@shared/hooks/useMediaQuery";
+import { LanguageToggle } from "@shared/i18n/LanguageToggle";
 import { BottomTabBar, type TabItem } from "./BottomTabBar";
 import { MobileTopBar } from "./MobileTopBar";
 
-const mobileTabs: ReadonlyArray<TabItem> = [
-  { label: "Home", icon: "LayoutGrid", to: routes.studentDashboard },
-  { label: "Find Work", icon: "Search", to: routes.studentFindWork },
-  { label: "My Gigs", icon: "Briefcase", to: routes.studentMyGigs },
-  { label: "Messages", icon: "MessageSquare", to: routes.studentMessages },
-  { label: "Profile", icon: "User", to: routes.studentProfile },
-];
-
 interface NavItem {
-  label: string;
+  labelKey: string;
   icon: IconName;
   to: string;
 }
 
 const items: ReadonlyArray<NavItem> = [
-  { label: "Find Work", icon: "Search", to: routes.studentFindWork },
-  { label: "My Gigs", icon: "Briefcase", to: routes.studentMyGigs },
-  { label: "Messages", icon: "MessageSquare", to: routes.studentMessages },
-  { label: "Perks", icon: "Sparkles", to: routes.studentPerks },
-  { label: "Learning", icon: "GraduationCap", to: routes.studentLearning },
-  { label: "Profile", icon: "User", to: routes.studentProfile },
+  { labelKey: "studentNav.findWork", icon: "Search", to: routes.studentFindWork },
+  { labelKey: "studentNav.myGigs", icon: "Briefcase", to: routes.studentMyGigs },
+  { labelKey: "studentNav.messages", icon: "MessageSquare", to: routes.studentMessages },
+  { labelKey: "studentNav.perks", icon: "Sparkles", to: routes.studentPerks },
+  { labelKey: "studentNav.learning", icon: "GraduationCap", to: routes.studentLearning },
+  { labelKey: "studentNav.profile", icon: "User", to: routes.studentProfile },
 ];
 
 function Sidebar() {
   const navigate = useNavigate();
   const logOut = useLogOut();
+  const { t } = useTranslation();
   return (
     <aside
       style={{
@@ -70,12 +65,11 @@ function Sidebar() {
               color: "var(--text-subtle)",
             }}
           >
-            Student Hub
+            {t("studentNav.subtitle")}
           </div>
         </div>
       </div>
       <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        {/* Dashboard as the "Find Work" landing for now */}
         <NavLink to={routes.studentDashboard} end>
           {({ isActive }) => (
             <span
@@ -93,12 +87,12 @@ function Sidebar() {
               }}
             >
               <Icon name="LayoutGrid" size={18} />
-              Dashboard
+              {t("studentNav.dashboard")}
             </span>
           )}
         </NavLink>
         {items.map((it) => (
-          <NavLink key={it.label} to={it.to}>
+          <NavLink key={it.labelKey} to={it.to}>
             {({ isActive }) => (
               <span
                 style={{
@@ -115,7 +109,7 @@ function Sidebar() {
                 }}
               >
                 <Icon name={it.icon} size={18} />
-                {it.label}
+                {t(it.labelKey)}
               </span>
             )}
           </NavLink>
@@ -126,7 +120,7 @@ function Sidebar() {
           marginTop: "auto",
           display: "flex",
           flexDirection: "column",
-          gap: 4,
+          gap: 8,
         }}
       >
         <Button
@@ -134,8 +128,11 @@ function Sidebar() {
           full
           onClick={() => navigate(routes.studentProfileEdit)}
         >
-          Post Profile
+          {t("studentNav.postProfile")}
         </Button>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
+          <LanguageToggle />
+        </div>
         <button
           type="button"
           onClick={() => navigate(routes.studentSupport)}
@@ -155,7 +152,7 @@ function Sidebar() {
           }}
         >
           <Icon name="HelpCircle" size={18} />
-          Support
+          {t("studentNav.support")}
         </button>
         <button
           type="button"
@@ -179,7 +176,7 @@ function Sidebar() {
           }}
         >
           <Icon name="LogOut" size={18} />
-          Sign Out
+          {t("common.signOut")}
         </button>
       </div>
     </aside>
@@ -188,8 +185,9 @@ function Sidebar() {
 
 function StudentMobileActions() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
-    <IconButton ariaLabel="Notifications" onClick={() => navigate(routes.studentNotifications)}>
+    <IconButton ariaLabel={t("studentNav.messages")} onClick={() => navigate(routes.studentNotifications)}>
       <Icon name="Bell" size={20} />
     </IconButton>
   );
@@ -197,6 +195,15 @@ function StudentMobileActions() {
 
 export function StudentLayout() {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
+
+  const mobileTabs: ReadonlyArray<TabItem> = [
+    { label: t("studentNav.home"), icon: "LayoutGrid", to: routes.studentDashboard },
+    { label: t("studentNav.findWork"), icon: "Search", to: routes.studentFindWork },
+    { label: t("studentNav.myGigs"), icon: "Briefcase", to: routes.studentMyGigs },
+    { label: t("studentNav.messages"), icon: "MessageSquare", to: routes.studentMessages },
+    { label: t("studentNav.profile"), icon: "User", to: routes.studentProfile },
+  ];
 
   if (isMobile) {
     return (

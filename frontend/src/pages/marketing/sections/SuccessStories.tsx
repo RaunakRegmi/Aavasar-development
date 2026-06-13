@@ -1,28 +1,33 @@
+import { useTranslation } from "react-i18next";
 import { Avatar, Card } from "@shared/ui";
 import { Icon } from "@shared/icons";
 
+// Note: testimonials are real personal quotes — names + quotes are kept in
+// English (their original language). Section chrome + the "Verified Student"
+// chip are translated.
 const items: ReadonlyArray<{ name: string; role: string; quote: string }> = [
   {
-    name: "Alex Rivera",
-    role: "Design Student @ ArtInst",
+    name: "Aarav Shrestha",
+    role: "Design Student @ KU",
     quote:
       "Aavasar helped me land my first UI internship while still in university. The portfolio I built through small gigs was exactly what recruiters were looking for.",
   },
   {
-    name: "Sarah Jenkins",
-    role: "CS Major @ TechU",
+    name: "Sneha Adhikari",
+    role: "CS Major @ Tribhuvan University",
     quote:
       "I paid for my final semester purely through Python tutoring gigs I found here. The platform is so easy to use and the payments are always on time.",
   },
   {
-    name: "Michael Cho",
-    role: "Marketing Junior @ State",
+    name: "Bibek Tamang",
+    role: "Marketing Junior @ Pokhara University",
     quote:
       "Managing social media for local startups via Aavasar gave me real-world experience that no classroom could provide. It's been a game changer.",
   },
 ];
 
 export function SuccessStories() {
+  const { t } = useTranslation();
   return (
     <section
       style={{
@@ -43,7 +48,7 @@ export function SuccessStories() {
               margin: "0 0 8px",
             }}
           >
-            Success Stories
+            {t("landing.successStories.title")}
           </h2>
           <p
             style={{
@@ -53,7 +58,7 @@ export function SuccessStories() {
               margin: 0,
             }}
           >
-            Hear from students who kickstarted their careers on Aavasar.
+            {t("landing.successStories.subtitle")}
           </p>
         </div>
         <div
@@ -115,7 +120,7 @@ export function SuccessStories() {
                   fontWeight: 600,
                 }}
               >
-                <Icon name="BadgeCheck" size={16} /> Verified Student
+                <Icon name="BadgeCheck" size={16} /> {t("common.verifiedStudent")}
               </div>
             </Card>
           ))}

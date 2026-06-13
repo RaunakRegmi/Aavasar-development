@@ -1,16 +1,11 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button, IconButton } from "@shared/ui";
 import { Icon } from "@shared/icons";
 import { routes } from "@shared/config/routes";
 import { useIsMobile } from "@shared/hooks/useMediaQuery";
-
-const links: ReadonlyArray<{ label: string; to: string }> = [
-  { label: "Find Gigs", to: routes.gigs },
-  { label: "How It Works", to: routes.howItWorks },
-  { label: "About", to: routes.about },
-  { label: "Contact", to: routes.contact },
-];
+import { LanguageToggle } from "@shared/i18n/LanguageToggle";
 
 function Brand() {
   return (
@@ -27,6 +22,14 @@ export function SiteNav() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
+
+  const links: ReadonlyArray<{ label: string; to: string }> = [
+    { label: t("nav.findGigs"), to: routes.gigs },
+    { label: t("nav.howItWorks"), to: routes.howItWorks },
+    { label: t("nav.about"), to: routes.about },
+    { label: t("nav.contact"), to: routes.contact },
+  ];
 
   return (
     <header
@@ -53,9 +56,12 @@ export function SiteNav() {
         {isMobile ? (
           <>
             <Brand />
-            <IconButton ariaLabel="Menu" variant="bordered" onClick={() => setOpen((v) => !v)}>
-              <Icon name={open ? "X" : "Menu"} size={20} />
-            </IconButton>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <LanguageToggle />
+              <IconButton ariaLabel={t("nav.menu")} variant="bordered" onClick={() => setOpen((v) => !v)}>
+                <Icon name={open ? "X" : "Menu"} size={20} />
+              </IconButton>
+            </div>
           </>
         ) : (
           <>
@@ -64,7 +70,7 @@ export function SiteNav() {
               <div style={{ display: "flex", gap: 24 }}>
                 {links.map((l) => (
                   <NavLink
-                    key={l.label}
+                    key={l.to}
                     to={l.to}
                     end
                     style={({ isActive }) => ({
@@ -83,10 +89,11 @@ export function SiteNav() {
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <Button variant="secondary" onClick={() => navigate(routes.logIn)}>Log In</Button>
-              <Button variant="primary" onClick={() => navigate(routes.signUp)}>Sign Up</Button>
+              <LanguageToggle />
+              <Button variant="secondary" onClick={() => navigate(routes.logIn)}>{t("common.logIn")}</Button>
+              <Button variant="primary" onClick={() => navigate(routes.signUp)}>{t("common.signUp")}</Button>
               <span style={{ width: 1, height: 24, background: "var(--border-strong)" }} />
-              <IconButton ariaLabel="Help" onClick={() => navigate(routes.help)}>
+              <IconButton ariaLabel={t("nav.help")} onClick={() => navigate(routes.help)}>
                 <Icon name="HelpCircle" size={20} />
               </IconButton>
             </div>
@@ -116,7 +123,7 @@ export function SiteNav() {
           >
             {links.map((l) => (
               <NavLink
-                key={l.label}
+                key={l.to}
                 to={l.to}
                 end
                 onClick={() => setOpen(false)}
@@ -135,10 +142,10 @@ export function SiteNav() {
             ))}
             <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
               <Button variant="secondary" full onClick={() => { setOpen(false); navigate(routes.logIn); }}>
-                Log In
+                {t("common.logIn")}
               </Button>
               <Button variant="primary" full onClick={() => { setOpen(false); navigate(routes.signUp); }}>
-                Sign Up
+                {t("common.signUp")}
               </Button>
             </div>
           </div>

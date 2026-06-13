@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@shared/ui";
 
 interface CtaBandProps {
@@ -6,6 +7,7 @@ interface CtaBandProps {
 }
 
 export function CtaBand({ onSignUp, onHire }: CtaBandProps) {
+  const { t } = useTranslation();
   return (
     <section className="container-page" style={{ paddingBottom: 72 }}>
       <div
@@ -26,7 +28,7 @@ export function CtaBand({ onSignUp, onHire }: CtaBandProps) {
             margin: "0 0 14px",
           }}
         >
-          Your Next Opportunity Starts Here
+          {t("landing.cta.title")}
         </h2>
         <p
           style={{
@@ -38,15 +40,14 @@ export function CtaBand({ onSignUp, onHire }: CtaBandProps) {
             maxWidth: 540,
           }}
         >
-          Join thousands of students and companies building the future of work.
-          Sign up today and browse your first gig in seconds.
+          {t("landing.cta.subtitle")}
         </p>
-        <div style={{ display: "flex", gap: 14, justifyContent: "center" }}>
+        <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
           <Button onDark variant="primary" size="lg" onClick={onSignUp}>
-            Sign Up Now
+            {t("landing.cta.primary")}
           </Button>
           <Button onDark variant="secondary" size="lg" onClick={onHire}>
-            Hire Talent
+            {t("landing.cta.secondary")}
           </Button>
         </div>
       </div>

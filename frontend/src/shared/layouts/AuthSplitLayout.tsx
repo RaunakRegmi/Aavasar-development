@@ -104,7 +104,7 @@ export function AuthSplitLayout({
             my second year. The platform is incredibly intuitive and professional.&rdquo;
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <Avatar name="Sarah Chen" size={44} />
+            <Avatar name="Aastha Khadka" size={44} />
             <div>
               <div
                 style={{
@@ -114,7 +114,7 @@ export function AuthSplitLayout({
                   color: "#fff",
                 }}
               >
-                Sarah Chen
+                Aastha Khadka
               </div>
               <div
                 style={{

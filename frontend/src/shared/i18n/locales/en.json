@@ -1,0 +1,251 @@
+{
+  "common": {
+    "logIn": "Log In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "logout": "Logout",
+    "back": "Back",
+    "send": "Send",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading…",
+    "learnMore": "Learn more",
+    "getStarted": "Get started",
+    "exploreGigs": "Explore All Gigs",
+    "hireTalent": "Hire Talent",
+    "postAGig": "Post a Gig",
+    "post": "Post",
+    "talkToUs": "Talk to us",
+    "signUpFree": "Sign up free",
+    "viewAll": "View all",
+    "seeMore": "See more",
+    "apply": "Apply",
+    "or": "OR CONTINUE WITH",
+    "verifiedStudent": "Verified Student",
+    "language": "Language",
+    "english": "English",
+    "nepali": "नेपाली"
+  },
+  "nav": {
+    "findGigs": "Find Gigs",
+    "howItWorks": "How It Works",
+    "about": "About",
+    "contact": "Contact",
+    "help": "Help",
+    "menu": "Menu"
+  },
+  "footer": {
+    "tagline": "The premier marketplace for student talent. Connecting tomorrow's leaders with today's opportunities through professional gigs and projects.",
+    "platform": "Platform",
+    "findGigs": "Find Gigs",
+    "postAJob": "Post a Job",
+    "howWeWork": "How We Work",
+    "successStories": "Success Stories",
+    "pricing": "Pricing",
+    "company": "Company",
+    "aboutUs": "About Us",
+    "ourMission": "Our Mission",
+    "careers": "Careers",
+    "press": "Press & Media",
+    "contactUs": "Contact Us",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "safetyCenter": "Safety Center",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Settings",
+    "rights": "© {{year}} Aavasar Inc. All rights reserved.",
+    "lang": "English (US)",
+    "currency": "NPR (रु)"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Empowering Student Careers",
+      "title": "Find your next gig and earn on your schedule",
+      "subtitle": "Join a community of 10,000+ students getting paid for their professional skills while they study. No long-term commitments, just great opportunities."
+    },
+    "stats": {
+      "students": "Enrolled Students",
+      "businesses": "Verified Businesses",
+      "rating": "Average Rating"
+    },
+    "howItWorks": {
+      "title": "Seamless Experience for Everyone",
+      "subtitle": "Whether you're looking to earn or looking to hire, Aavasar makes it simple, fast, and secure.",
+      "forStudents": "For Students",
+      "forBusinesses": "For Businesses",
+      "students": {
+        "step1Title": "Create Your Profile",
+        "step1Body": "Highlight your skills, portfolio, and education to stand out to employers.",
+        "step2Title": "Find Relevant Gigs",
+        "step2Body": "Browse thousands of student-specific tasks and apply with one click.",
+        "step3Title": "Get Paid Securely",
+        "step3Body": "Complete your tasks and receive payments directly to your account. No hidden fees."
+      },
+      "businesses": {
+        "step1Title": "Post a Task",
+        "step1Body": "Define your project, set your budget, and post in minutes to reach top student talent.",
+        "step2Title": "Review Top Talent",
+        "step2Body": "Filter through vetted applications and choose the best fit for your needs.",
+        "step3Title": "Scale Your Team",
+        "step3Body": "Get quality work done efficiently while helping students build their portfolios."
+      }
+    },
+    "featured": {
+      "title": "Featured Gigs",
+      "subtitle": "Log in to apply for these top-tier opportunities.",
+      "premiumBadge": "Premium",
+      "logInToApply": "Log in to Apply",
+      "signUpToApply": "Sign Up to Apply"
+    },
+    "successStories": {
+      "title": "Success Stories",
+      "subtitle": "Hear from students who kickstarted their careers on Aavasar."
+    },
+    "recent": {
+      "title": "Recently Added Gigs",
+      "by": "By",
+      "moreCta": "See 50+ More Opportunities"
+    },
+    "cta": {
+      "title": "Your Next Opportunity Starts Here",
+      "subtitle": "Join thousands of students and companies building the future of work. Sign up today and browse your first gig in seconds.",
+      "primary": "Sign Up Now",
+      "secondary": "Hire Talent"
+    }
+  },
+  "howItWorks": {
+    "card1Title": "Safe & Secure",
+    "card1Body": "All profiles are verified. Payments are escrow-protected until work is delivered.",
+    "card2Title": "Flexible Hours",
+    "card2Body": "Work around your class schedule. Set your own availability and commit to what fits.",
+    "card3Title": "Build Your Portfolio",
+    "card3Body": "Every gig completed adds to your professional portfolio with real client feedback."
+  },
+  "about": {
+    "badge": "About Aavasar",
+    "heroTitle": "Connecting Nepali student talent with the work that matters",
+    "heroSubtitle": "Aavasar is a marketplace where students earn real money and real experience while businesses across Nepal hire vetted, motivated talent — quickly, transparently, and at a fair price.",
+    "storyTitle": "Our story",
+    "story1": "Aavasar started with a simple frustration: Nepal is full of skilled, ambitious students — and businesses that desperately need their skills — but the two sides almost never meet at the right time.",
+    "story2": "Students were stuck choosing between unpaid internships and gigs that didn't fit their schedule. Recruiters were posting to noisy job boards and waiting weeks for a single qualified applicant. We built Aavasar to close that gap.",
+    "story3": "Today, students join free, build a verified portfolio, and apply to paid gigs that match their skills. Recruiters post a role, screen applicants the same day, and message the right person directly — no middlemen, no surprises.",
+    "missionTitle": "Our mission",
+    "missionLead": "Make professional work-experience accessible to every Nepali student, and make hiring vetted talent a same-week decision for every Nepali business.",
+    "mission1": "Students earn while they study and graduate with a real portfolio.",
+    "mission2": "Recruiters hire vetted talent in days, not months — at a fair price.",
+    "mission3": "Every transaction is transparent, in NPR, and protected.",
+    "pillarsTitle": "What's different about Aavasar",
+    "pillarsSubtitle": "We're not a generic job board. Every feature is designed for the way Nepali students and recruiters actually work.",
+    "pillar1Title": "Built for Nepali students",
+    "pillar1Body": "Aavasar is designed around how students in Nepal actually work — flexible hours, gigs that fit a class schedule, and pay in NPR with no foreign-exchange friction.",
+    "pillar2Title": "Vetted on both sides",
+    "pillar2Body": "Every student profile is reviewed before it goes live, and recruiters verify their company before posting. Trust is the product.",
+    "pillar3Title": "Hire in days, not months",
+    "pillar3Body": "Recruiters post a gig, see qualified applicants the same day, and message candidates directly. No agencies, no inflated fees.",
+    "teamTitle": "Meet the team",
+    "teamSubtitle": "A small founding team based in Kathmandu, building Aavasar from the ground up.",
+    "ctaTitle": "Ready to be part of it?",
+    "ctaSubtitle": "Join thousands of students and recruiters who are already using Aavasar to get work done across Nepal.",
+    "roles": {
+      "ceo": "CEO / Founder",
+      "cofounder": "Co-Founder"
+    }
+  },
+  "contact": {
+    "title": "Get in touch",
+    "subtitle": "Questions, partnerships, press, or just want to say hello — we read every message. We typically reply within one working day.",
+    "emailTitle": "Email",
+    "emailBody": "The fastest way to reach the team.",
+    "locationTitle": "Based in",
+    "locationBody": "Kathmandu, Nepal — serving students across the country.",
+    "partnershipsTitle": "Partnerships",
+    "partnershipsBody": "Hiring 20+ students, university tie-ups, or events? Email us with the subject Partnership and we'll route you to the right person.",
+    "formTitle": "Send us a message",
+    "formSubtitle": "Prefer a form? Drop your details below and we'll get back to you by email.",
+    "name": "Your name",
+    "namePlaceholder": "Aarya Sharma",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "subject": "Subject",
+    "subjectPlaceholder": "How can we help?",
+    "message": "Message",
+    "messagePlaceholder": "Tell us a bit about what you're looking for…",
+    "sendMessage": "Send message",
+    "sent": "Your mail client just opened with everything filled in — hit send there and we'll take it from here.",
+    "mailSubject": "Aavasar enquiry"
+  },
+  "signUp": {
+    "title": "Create your account",
+    "subtitle": "Join the community and start your journey today.",
+    "joinAs": "I want to join as a:",
+    "student": "Student",
+    "recruiter": "Recruiter",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Aarav Shrestha",
+    "campusEmail": "Campus Email",
+    "workEmail": "Work Email",
+    "studentEmailPlaceholder": "you@university.edu",
+    "recruiterEmailPlaceholder": "you@company.com",
+    "password": "Password",
+    "passwordHelper": "8+ characters, with at least one letter and one number.",
+    "confirmPassword": "Confirm Password",
+    "agree": "I agree to the Terms of Service and Privacy Policy.",
+    "submit": "Create Account",
+    "submitting": "Creating Account…",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Log in"
+  },
+  "login": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to continue to your dashboard.",
+    "email": "Email",
+    "emailPlaceholder": "you@university.edu",
+    "password": "Password",
+    "remember": "Remember me",
+    "forgot": "Forgot password?",
+    "submit": "Sign In",
+    "submitting": "Signing in…",
+    "noAccount": "New to Aavasar?",
+    "signUpLink": "Create an account",
+    "oauthFailed": "Social sign-in failed. Please try again or use email & password.",
+    "dismiss": "Dismiss"
+  },
+  "studentNav": {
+    "subtitle": "Student Hub",
+    "dashboard": "Dashboard",
+    "findWork": "Find Work",
+    "myGigs": "My Gigs",
+    "messages": "Messages",
+    "perks": "Perks",
+    "learning": "Learning",
+    "profile": "Profile",
+    "postProfile": "Post Profile",
+    "support": "Support",
+    "home": "Home"
+  },
+  "recruiterNav": {
+    "subtitle": "Manage your talent pipeline",
+    "title": "Recruiter Admin",
+    "dashboard": "Dashboard",
+    "browseTalent": "Browse Talent",
+    "resources": "Resources",
+    "overview": "Overview",
+    "myGigs": "My Gigs",
+    "applicants": "Applicants",
+    "messages": "Messages",
+    "billing": "Billing",
+    "settings": "Settings",
+    "upgrade": "Upgrade Plan",
+    "talent": "Talent",
+    "home": "Home"
+  },
+  "accountMenu": {
+    "account": "Account",
+    "signOut": "Sign out"
+  },
+  "comingSoon": {
+    "back": "Back",
+    "defaultSubtitle": "We're polishing this surface — it'll land in an upcoming release."
+  }
+}

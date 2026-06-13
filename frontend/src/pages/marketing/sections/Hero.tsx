@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@shared/ui";
 
 interface HeroProps {
@@ -6,6 +7,7 @@ interface HeroProps {
 }
 
 export function Hero({ onPrimary, onSecondary }: HeroProps) {
+  const { t } = useTranslation();
   return (
     <section
       className="container-page"
@@ -61,7 +63,7 @@ export function Hero({ onPrimary, onSecondary }: HeroProps) {
               marginBottom: 20,
             }}
           >
-            Empowering Student Careers
+            {t("landing.hero.badge")}
           </span>
           <h1
             style={{
@@ -74,7 +76,7 @@ export function Hero({ onPrimary, onSecondary }: HeroProps) {
               margin: "0 0 16px",
             }}
           >
-            Find your next gig and earn on your schedule
+            {t("landing.hero.title")}
           </h1>
           <p
             style={{
@@ -86,16 +88,14 @@ export function Hero({ onPrimary, onSecondary }: HeroProps) {
               maxWidth: 480,
             }}
           >
-            Join a community of 10,000+ students getting paid for their
-            professional skills while they study. No long-term commitments,
-            just great opportunities.
+            {t("landing.hero.subtitle")}
           </p>
           <div style={{ display: "flex", gap: 14 }}>
             <Button onDark variant="primary" size="lg" onClick={onPrimary}>
-              Explore All Gigs
+              {t("common.exploreGigs")}
             </Button>
             <Button onDark variant="outline" size="lg" onClick={onSecondary}>
-              How It Works
+              {t("nav.howItWorks")}
             </Button>
           </div>
         </div>

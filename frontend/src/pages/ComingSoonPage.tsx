@@ -8,6 +8,7 @@
  * via route props (see `stub()` helper in router.tsx).
  */
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button, Card } from "@shared/ui";
 import { Icon } from "@shared/icons";
 
@@ -20,10 +21,11 @@ export interface ComingSoonPageProps {
 
 export default function ComingSoonPage({
   title,
-  subtitle = "We're polishing this surface — it'll land in an upcoming release.",
+  subtitle,
   fallbackPath,
 }: ComingSoonPageProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -71,7 +73,7 @@ export default function ComingSoonPage({
             margin: "0 0 24px",
           }}
         >
-          {subtitle}
+          {subtitle ?? t("comingSoon.defaultSubtitle")}
         </p>
         <div
           style={{
@@ -85,7 +87,7 @@ export default function ComingSoonPage({
             onClick={() => (fallbackPath ? navigate(fallbackPath) : navigate(-1))}
             iconLeft={<Icon name="ArrowLeft" size={16} />}
           >
-            Back
+            {t("comingSoon.back")}
           </Button>
         </div>
       </Card>

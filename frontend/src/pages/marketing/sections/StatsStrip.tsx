@@ -1,12 +1,13 @@
+import { useTranslation } from "react-i18next";
 import { Icon } from "@shared/icons";
 
-const items: ReadonlyArray<{ value: string; label: string; star?: boolean }> = [
-  { value: "10,000+", label: "Enrolled Students" },
-  { value: "500+", label: "Verified Businesses" },
-  { value: "4.9/5", label: "Average Rating", star: true },
-];
-
 export function StatsStrip() {
+  const { t } = useTranslation();
+  const items: ReadonlyArray<{ value: string; label: string; star?: boolean }> = [
+    { value: "10,000+", label: t("landing.stats.students") },
+    { value: "500+", label: t("landing.stats.businesses") },
+    { value: "4.9/5", label: t("landing.stats.rating"), star: true },
+  ];
   return (
     <section className="container-page" style={{ paddingBottom: 56 }}>
       <div

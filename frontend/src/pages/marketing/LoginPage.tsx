@@ -13,6 +13,7 @@
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { Button, Checkbox, Input, useToast } from "@shared/ui";
 import { AuthSplitLayout } from "@shared/layouts";
 import { Icon } from "@shared/icons";
@@ -44,6 +45,7 @@ export default function LoginPage() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const toast = useToast();
+  const { t } = useTranslation();
   const logIn = useLogIn();
   const from = (location.state as LocationState | null)?.from;
   const oauthError = searchParams.get("error") === "oauth";
@@ -102,7 +104,7 @@ export default function LoginPage() {
             margin: "0 0 6px",
           }}
         >
-          Welcome back
+          {t("login.title")}
         </h1>
         <p
           style={{
@@ -112,7 +114,7 @@ export default function LoginPage() {
             margin: 0,
           }}
         >
-          Sign in to continue to your dashboard.
+          {t("login.subtitle")}
         </p>
       </div>
 
@@ -137,7 +139,7 @@ export default function LoginPage() {
             <line x1="9" y1="9" x2="15" y2="15" />
           </svg>
           <span>
-            Social sign-in failed. Please try again or use email & password.
+            {t("login.oauthFailed")}
           </span>
           <button
             onClick={() => setSearchParams({})}
@@ -150,7 +152,7 @@ export default function LoginPage() {
               padding: 0,
               lineHeight: 1,
             }}
-            aria-label="Dismiss"
+            aria-label={t("login.dismiss")}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -165,15 +167,15 @@ export default function LoginPage() {
         style={{ display: "flex", flexDirection: "column", gap: 20 }}
       >
         <Input
-          label="Email"
+          label={t("login.email")}
           type="email"
-          placeholder="you@university.edu"
+          placeholder={t("login.emailPlaceholder")}
           autoComplete="email"
           error={errors.email?.message}
           {...register("email")}
         />
         <Input
-          label="Password"
+          label={t("login.password")}
           passwordToggle
           autoComplete="current-password"
           error={errors.password?.message}
@@ -194,7 +196,7 @@ export default function LoginPage() {
               <Checkbox
                 checked={field.value ?? false}
                 onChange={(e) => field.onChange(e.target.checked)}
-                label="Remember me"
+                label={t("login.remember")}
               />
             )}
           />
@@ -208,7 +210,7 @@ export default function LoginPage() {
               textDecoration: "none",
             }}
           >
-            Forgot password?
+            {t("login.forgot")}
           </Link>
         </div>
 
@@ -220,7 +222,7 @@ export default function LoginPage() {
           disabled={isSubmitting}
           iconRight={<Icon name="ArrowRight" size={18} />}
         >
-          {isSubmitting ? "Signing in…" : "Sign In"}
+          {isSubmitting ? t("login.submitting") : t("login.submit")}
         </Button>
 
         <div
@@ -240,7 +242,7 @@ export default function LoginPage() {
               letterSpacing: "0.06em",
             }}
           >
-            OR CONTINUE WITH
+            {t("common.or")}
           </span>
           <span style={{ flex: 1, height: 1, background: "var(--border-default)" }} />
         </div>
@@ -265,7 +267,7 @@ export default function LoginPage() {
             color: "var(--text-muted)",
           }}
         >
-          New to Aavasar?{" "}
+          {t("login.noAccount")}{" "}
           <Link
             to={routes.signUp}
             style={{
@@ -274,7 +276,7 @@ export default function LoginPage() {
               textDecoration: "none",
             }}
           >
-            Create an account
+            {t("login.signUpLink")}
           </Link>
         </div>
       </form>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Icon, type IconName } from "@shared/icons";
 import { routes, type RoutePath } from "@shared/config/routes";
 
@@ -12,39 +13,6 @@ interface FooterColumn {
   items: ReadonlyArray<FooterLink>;
 }
 
-const cols: ReadonlyArray<FooterColumn> = [
-  {
-    heading: "Platform",
-    items: [
-      { label: "Find Gigs", to: routes.gigs },
-      { label: "Post a Job", to: routes.recruiterPostGig },
-      { label: "How We Work", to: routes.howItWorks },
-      { label: "Success Stories", to: routes.successStories },
-      { label: "Pricing", to: routes.pricing },
-    ],
-  },
-  {
-    heading: "Company",
-    items: [
-      { label: "About Us", to: routes.about },
-      { label: "Our Mission", to: routes.about },
-      { label: "Careers", to: routes.careers },
-      { label: "Press & Media", to: routes.press },
-      { label: "Contact Us", to: routes.contact },
-    ],
-  },
-  {
-    heading: "Support",
-    items: [
-      { label: "Help Center", to: routes.help },
-      { label: "Safety Center", to: routes.safety },
-      { label: "Terms of Service", to: routes.terms },
-      { label: "Privacy Policy", to: routes.privacy },
-      { label: "Cookie Settings", to: routes.cookies },
-    ],
-  },
-];
-
 const socials: ReadonlyArray<{ icon: IconName; href: string; label: string }> = [
   { icon: "Share2", href: "https://twitter.com/aavasar", label: "Twitter" },
   { icon: "AtSign", href: "mailto:hello@aavasar.np", label: "Email" },
@@ -52,6 +20,41 @@ const socials: ReadonlyArray<{ icon: IconName; href: string; label: string }> = 
 ];
 
 export function SiteFooter() {
+  const { t } = useTranslation();
+
+  const cols: ReadonlyArray<FooterColumn> = [
+    {
+      heading: t("footer.platform"),
+      items: [
+        { label: t("footer.findGigs"), to: routes.gigs },
+        { label: t("footer.postAJob"), to: routes.recruiterPostGig },
+        { label: t("footer.howWeWork"), to: routes.howItWorks },
+        { label: t("footer.successStories"), to: routes.successStories },
+        { label: t("footer.pricing"), to: routes.pricing },
+      ],
+    },
+    {
+      heading: t("footer.company"),
+      items: [
+        { label: t("footer.aboutUs"), to: routes.about },
+        { label: t("footer.ourMission"), to: routes.about },
+        { label: t("footer.careers"), to: routes.careers },
+        { label: t("footer.press"), to: routes.press },
+        { label: t("footer.contactUs"), to: routes.contact },
+      ],
+    },
+    {
+      heading: t("footer.support"),
+      items: [
+        { label: t("footer.helpCenter"), to: routes.help },
+        { label: t("footer.safetyCenter"), to: routes.safety },
+        { label: t("footer.terms"), to: routes.terms },
+        { label: t("footer.privacy"), to: routes.privacy },
+        { label: t("footer.cookies"), to: routes.cookies },
+      ],
+    },
+  ];
+
   return (
     <footer
       style={{
@@ -85,8 +88,7 @@ export function SiteFooter() {
                 maxWidth: 280,
               }}
             >
-              The premier marketplace for student talent. Connecting tomorrow&apos;s leaders
-              with today&apos;s opportunities through professional gigs and projects.
+              {t("footer.tagline")}
             </p>
             <div style={{ display: "flex", gap: 12 }}>
               {socials.map((s) => (
@@ -129,9 +131,9 @@ export function SiteFooter() {
               >
                 {c.heading}
               </span>
-              {c.items.map((i) => (
+              {c.items.map((i, idx) => (
                 <Link
-                  key={i.label}
+                  key={`${i.to}-${idx}`}
                   to={i.to}
                   style={{
                     fontFamily: "var(--font-text)",
@@ -154,6 +156,8 @@ export function SiteFooter() {
             borderTop: "1px solid var(--border-default)",
             marginTop: 48,
             paddingTop: 32,
+            flexWrap: "wrap",
+            gap: 16,
           }}
         >
           <span
@@ -163,7 +167,7 @@ export function SiteFooter() {
               color: "var(--text-muted)",
             }}
           >
-            © {new Date().getFullYear()} Aavasar Inc. All rights reserved.
+            {t("footer.rights", { year: new Date().getFullYear() })}
           </span>
           <div style={{ display: "flex", gap: 24 }}>
             <span
@@ -173,7 +177,7 @@ export function SiteFooter() {
                 color: "var(--text-muted)",
               }}
             >
-              English (US)
+              {t("footer.lang")}
             </span>
             <span
               style={{
@@ -182,7 +186,7 @@ export function SiteFooter() {
                 color: "var(--text-muted)",
               }}
             >
-              NPR (रु)
+              {t("footer.currency")}
             </span>
           </div>
         </div>

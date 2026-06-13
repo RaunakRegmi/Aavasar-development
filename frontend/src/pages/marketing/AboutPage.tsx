@@ -1,51 +1,42 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Avatar, Button, Card } from "@shared/ui";
 import { Icon, type IconName } from "@shared/icons";
 import { routes } from "@shared/config/routes";
 
 interface TeamMember {
   name: string;
-  role: string;
+  /** i18n key under `about.roles` */
+  roleKey: "ceo" | "cofounder";
   /** Public photo filename (under /public/team/). */
   slug: string;
 }
 
 // TODO: replace placeholder photos at /public/team/<slug>.jpg with real headshots.
 const TEAM: ReadonlyArray<TeamMember> = [
-  { name: "Raunak Regmi", role: "CEO / Founder", slug: "raunak-regmi" },
-  { name: "Samikshya Dhamala", role: "Co-Founder", slug: "samikshya-dhamala" },
-  { name: "Unika Ghimire", role: "Co-Founder", slug: "unika-ghimire" },
-  { name: "Pratikshya Ghimire", role: "Co-Founder", slug: "pratikshya-ghimire" },
-  { name: "Shreya Bhatta", role: "Co-Founder", slug: "shreya-bhatta" },
+  { name: "Raunak Regmi", roleKey: "ceo", slug: "raunak-regmi" },
+  { name: "Samikshya Dhamala", roleKey: "cofounder", slug: "samikshya-dhamala" },
+  { name: "Unika Ghimire", roleKey: "cofounder", slug: "unika-ghimire" },
+  { name: "Pratikshya Ghimire", roleKey: "cofounder", slug: "pratikshya-ghimire" },
+  { name: "Shreya Bhatta", roleKey: "cofounder", slug: "shreya-bhatta" },
 ];
 
-interface Pillar {
+interface PillarRow {
   icon: IconName;
-  title: string;
-  body: string;
+  titleKey: string;
+  bodyKey: string;
 }
 
-const PILLARS: ReadonlyArray<Pillar> = [
-  {
-    icon: "GraduationCap",
-    title: "Built for Nepali students",
-    body: "Aavasar is designed around how students in Nepal actually work — flexible hours, gigs that fit a class schedule, and pay in NPR with no foreign-exchange friction.",
-  },
-  {
-    icon: "ShieldCheck",
-    title: "Vetted on both sides",
-    body: "Every student profile is reviewed before it goes live, and recruiters verify their company before posting. Trust is the product.",
-  },
-  {
-    icon: "Zap",
-    title: "Hire in days, not months",
-    body: "Recruiters post a gig, see qualified applicants the same day, and message candidates directly. No agencies, no inflated fees.",
-  },
+const PILLARS: ReadonlyArray<PillarRow> = [
+  { icon: "GraduationCap", titleKey: "about.pillar1Title", bodyKey: "about.pillar1Body" },
+  { icon: "ShieldCheck", titleKey: "about.pillar2Title", bodyKey: "about.pillar2Body" },
+  { icon: "Zap", titleKey: "about.pillar3Title", bodyKey: "about.pillar3Body" },
 ];
 
 export default function AboutPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <main className="container-page" style={{ paddingTop: 64, paddingBottom: 72 }}>
@@ -64,49 +55,28 @@ export default function AboutPage() {
             marginBottom: 20,
           }}
         >
-          About Aavasar
+          {t("about.badge")}
         </span>
-        <h1 style={h1Style}>
-          Connecting Nepali student talent with the work that matters
-        </h1>
-        <p style={leadStyle}>
-          Aavasar is a marketplace where students earn real money and real experience while
-          businesses across Nepal hire vetted, motivated talent — quickly, transparently, and
-          at a fair price.
-        </p>
+        <h1 style={h1Style}>{t("about.heroTitle")}</h1>
+        <p style={leadStyle}>{t("about.heroSubtitle")}</p>
       </section>
 
       {/* ---- Story ---- */}
       <section style={{ maxWidth: 880, margin: "0 auto 72px" }}>
         <div className="aav-split" style={{ alignItems: "center" }}>
           <div>
-            <h2 style={h2Style}>Our story</h2>
-            <p style={paragraphStyle}>
-              Aavasar started with a simple frustration: Nepal is full of skilled,
-              ambitious students — and businesses that desperately need their skills — but
-              the two sides almost never meet at the right time.
-            </p>
-            <p style={paragraphStyle}>
-              Students were stuck choosing between unpaid internships and gigs that didn't
-              fit their schedule. Recruiters were posting to noisy job boards and waiting
-              weeks for a single qualified applicant. We built Aavasar to close that gap.
-            </p>
-            <p style={paragraphStyle}>
-              Today, students join free, build a verified portfolio, and apply to paid
-              gigs that match their skills. Recruiters post a role, screen applicants the
-              same day, and message the right person directly — no middlemen, no surprises.
-            </p>
+            <h2 style={h2Style}>{t("about.storyTitle")}</h2>
+            <p style={paragraphStyle}>{t("about.story1")}</p>
+            <p style={paragraphStyle}>{t("about.story2")}</p>
+            <p style={paragraphStyle}>{t("about.story3")}</p>
           </div>
           <Card tone="well" padding={28}>
-            <h3 style={h3Style}>Our mission</h3>
-            <p style={{ ...paragraphStyle, marginBottom: 16 }}>
-              Make professional work-experience accessible to every Nepali student, and
-              make hiring vetted talent a same-week decision for every Nepali business.
-            </p>
+            <h3 style={h3Style}>{t("about.missionTitle")}</h3>
+            <p style={{ ...paragraphStyle, marginBottom: 16 }}>{t("about.missionLead")}</p>
             <ul style={listStyle}>
-              <MissionRow text="Students earn while they study and graduate with a real portfolio." />
-              <MissionRow text="Recruiters hire vetted talent in days, not months — at a fair price." />
-              <MissionRow text="Every transaction is transparent, in NPR, and protected." />
+              <MissionRow text={t("about.mission1")} />
+              <MissionRow text={t("about.mission2")} />
+              <MissionRow text={t("about.mission3")} />
             </ul>
           </Card>
         </div>
@@ -115,15 +85,14 @@ export default function AboutPage() {
       {/* ---- What's different ---- */}
       <section style={{ maxWidth: 1040, margin: "0 auto 72px" }}>
         <header style={{ textAlign: "center", marginBottom: 32 }}>
-          <h2 style={h2Style}>What's different about Aavasar</h2>
+          <h2 style={h2Style}>{t("about.pillarsTitle")}</h2>
           <p style={{ ...leadStyle, maxWidth: 600, margin: "0 auto" }}>
-            We're not a generic job board. Every feature is designed for the way Nepali
-            students and recruiters actually work.
+            {t("about.pillarsSubtitle")}
           </p>
         </header>
         <div className="aav-grid-3">
           {PILLARS.map((p) => (
-            <Card key={p.title} padding={28}>
+            <Card key={p.titleKey} padding={28}>
               <span
                 style={{
                   width: 44,
@@ -139,8 +108,8 @@ export default function AboutPage() {
               >
                 <Icon name={p.icon} size={22} />
               </span>
-              <h3 style={h3Style}>{p.title}</h3>
-              <p style={{ ...paragraphStyle, marginBottom: 0 }}>{p.body}</p>
+              <h3 style={h3Style}>{t(p.titleKey)}</h3>
+              <p style={{ ...paragraphStyle, marginBottom: 0 }}>{t(p.bodyKey)}</p>
             </Card>
           ))}
         </div>
@@ -149,9 +118,9 @@ export default function AboutPage() {
       {/* ---- Team ---- */}
       <section style={{ maxWidth: 1040, margin: "0 auto 72px" }}>
         <header style={{ textAlign: "center", marginBottom: 32 }}>
-          <h2 style={h2Style}>Meet the team</h2>
+          <h2 style={h2Style}>{t("about.teamTitle")}</h2>
           <p style={{ ...leadStyle, maxWidth: 600, margin: "0 auto" }}>
-            A small founding team based in Kathmandu, building Aavasar from the ground up.
+            {t("about.teamSubtitle")}
           </p>
         </header>
         <div
@@ -179,15 +148,7 @@ export default function AboutPage() {
               gap: 16,
             }}
           >
-            <h2
-              style={{
-                ...h2Style,
-                color: "#fff",
-                margin: 0,
-              }}
-            >
-              Ready to be part of it?
-            </h2>
+            <h2 style={{ ...h2Style, color: "#fff", margin: 0 }}>{t("about.ctaTitle")}</h2>
             <p
               style={{
                 fontFamily: "var(--font-text)",
@@ -198,26 +159,14 @@ export default function AboutPage() {
                 maxWidth: 480,
               }}
             >
-              Join thousands of students and recruiters who are already using Aavasar to
-              get work done across Nepal.
+              {t("about.ctaSubtitle")}
             </p>
-            <div
-              className="aav-row-wrap"
-              style={{ justifyContent: "center", marginTop: 8 }}
-            >
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={() => navigate(routes.signUp)}
-              >
-                Sign up free
+            <div className="aav-row-wrap" style={{ justifyContent: "center", marginTop: 8 }}>
+              <Button onDark variant="primary" size="lg" onClick={() => navigate(routes.signUp)}>
+                {t("common.signUpFree")}
               </Button>
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={() => navigate(routes.contact)}
-              >
-                Talk to us
+              <Button onDark variant="outline" size="lg" onClick={() => navigate(routes.contact)}>
+                {t("common.talkToUs")}
               </Button>
             </div>
           </div>
@@ -250,6 +199,7 @@ function MissionRow({ text }: { text: string }) {
 }
 
 function TeamCard({ member }: { member: TeamMember }) {
+  const { t } = useTranslation();
   // TODO: replace with a real photo at /public/team/<slug>.jpg.
   // Falls back to Avatar (initials) until the file exists.
   const [broken, setBroken] = useState(false);
@@ -306,7 +256,7 @@ function TeamCard({ member }: { member: TeamMember }) {
             marginTop: 2,
           }}
         >
-          {member.role}
+          {t(`about.roles.${member.roleKey}`)}
         </div>
       </div>
     </div>

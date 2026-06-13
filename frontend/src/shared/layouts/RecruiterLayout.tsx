@@ -1,38 +1,34 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Avatar, Button, IconButton } from "@shared/ui";
 import { Icon, type IconName } from "@shared/icons";
 import { routes } from "@shared/config/routes";
 import { useCurrentUser, useLogOut } from "@features/auth";
 import { useIsMobile } from "@shared/hooks/useMediaQuery";
+import { LanguageToggle } from "@shared/i18n/LanguageToggle";
 import { BottomTabBar, type TabItem } from "./BottomTabBar";
 import { MobileTopBar } from "./MobileTopBar";
 
-const topLinks: ReadonlyArray<{ label: string; to: string }> = [
-  { label: "Dashboard", to: routes.recruiterDashboard },
-  { label: "Browse Talent", to: routes.recruiterBrowseTalent },
-  { label: "Resources", to: routes.recruiterResources },
-];
-
-const sideItems: ReadonlyArray<{ label: string; icon: IconName; to: string }> = [
-  { label: "Overview", icon: "LayoutGrid", to: routes.recruiterDashboard },
-  { label: "My Gigs", icon: "Briefcase", to: routes.recruiterMyGigs },
-  { label: "Applicants", icon: "Users", to: routes.recruiterApplicants },
-  { label: "Messages", icon: "Mail", to: routes.recruiterMessages },
-  { label: "Billing", icon: "CreditCard", to: routes.recruiterBilling },
-  { label: "Settings", icon: "Settings", to: routes.recruiterSettings },
-];
-
-const mobileTabs: ReadonlyArray<TabItem> = [
-  { label: "Home", icon: "LayoutGrid", to: routes.recruiterDashboard },
-  { label: "Talent", icon: "Users", to: routes.recruiterBrowseTalent },
-  { label: "Applicants", icon: "Inbox", to: routes.recruiterApplicants },
-  { label: "Messages", icon: "Mail", to: routes.recruiterMessages },
-  { label: "Settings", icon: "Settings", to: routes.recruiterSettings },
+const sideItems: ReadonlyArray<{ labelKey: string; icon: IconName; to: string }> = [
+  { labelKey: "recruiterNav.overview", icon: "LayoutGrid", to: routes.recruiterDashboard },
+  { labelKey: "recruiterNav.myGigs", icon: "Briefcase", to: routes.recruiterMyGigs },
+  { labelKey: "recruiterNav.applicants", icon: "Users", to: routes.recruiterApplicants },
+  { labelKey: "recruiterNav.messages", icon: "Mail", to: routes.recruiterMessages },
+  { labelKey: "recruiterNav.billing", icon: "CreditCard", to: routes.recruiterBilling },
+  { labelKey: "recruiterNav.settings", icon: "Settings", to: routes.recruiterSettings },
 ];
 
 function TopNav() {
   const navigate = useNavigate();
   const user = useCurrentUser();
+  const { t } = useTranslation();
+
+  const topLinks: ReadonlyArray<{ label: string; to: string }> = [
+    { label: t("recruiterNav.dashboard"), to: routes.recruiterDashboard },
+    { label: t("recruiterNav.browseTalent"), to: routes.recruiterBrowseTalent },
+    { label: t("recruiterNav.resources"), to: routes.recruiterResources },
+  ];
+
   return (
     <header
       style={{
@@ -69,7 +65,7 @@ function TopNav() {
           <div style={{ display: "flex", gap: 6 }}>
             {topLinks.map((l) => (
               <NavLink
-                key={l.label}
+                key={l.to}
                 to={l.to}
                 end
                 style={({ isActive }) => ({
@@ -90,14 +86,15 @@ function TopNav() {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <LanguageToggle />
           <IconButton
-            ariaLabel="Notifications"
+            ariaLabel={t("studentNav.messages")}
             onClick={() => navigate(routes.recruiterNotifications)}
           >
             <Icon name="Bell" size={20} />
           </IconButton>
           <IconButton
-            ariaLabel="Help"
+            ariaLabel={t("nav.help")}
             onClick={() => navigate(routes.help)}
           >
             <Icon name="HelpCircle" size={20} />
@@ -106,12 +103,12 @@ function TopNav() {
             variant="primary"
             onClick={() => navigate(routes.recruiterPostGig)}
           >
-            Post a Gig
+            {t("common.postAGig")}
           </Button>
           <button
             type="button"
             onClick={() => navigate(routes.recruiterSettings)}
-            aria-label="Account"
+            aria-label={t("accountMenu.account")}
             style={{
               background: "transparent",
               border: "none",
@@ -130,6 +127,7 @@ function TopNav() {
 function SideNav() {
   const navigate = useNavigate();
   const logOut = useLogOut();
+  const { t } = useTranslation();
   return (
     <aside
       style={{
@@ -152,7 +150,7 @@ function SideNav() {
             color: "var(--text-strong)",
           }}
         >
-          Recruiter Admin
+          {t("recruiterNav.title")}
         </div>
         <div
           style={{
@@ -161,12 +159,12 @@ function SideNav() {
             color: "var(--text-subtle)",
           }}
         >
-          Manage your talent pipeline
+          {t("recruiterNav.subtitle")}
         </div>
       </div>
       <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         {sideItems.map((it) => (
-          <NavLink key={it.label} to={it.to} end>
+          <NavLink key={it.labelKey} to={it.to} end>
             {({ isActive }) => (
               <span
                 style={{
@@ -183,7 +181,7 @@ function SideNav() {
                 }}
               >
                 <Icon name={it.icon} size={18} />
-                {it.label}
+                {t(it.labelKey)}
               </span>
             )}
           </NavLink>
@@ -205,7 +203,7 @@ function SideNav() {
             cursor: "pointer",
           }}
         >
-          Upgrade Plan
+          {t("recruiterNav.upgrade")}
         </button>
         <button
           type="button"
@@ -229,7 +227,7 @@ function SideNav() {
           }}
         >
           <Icon name="LogOut" size={18} />
-          Logout
+          {t("common.logout")}
         </button>
       </div>
     </aside>
@@ -238,9 +236,10 @@ function SideNav() {
 
 function RecruiterMobileActions() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <>
-      <IconButton ariaLabel="Notifications" onClick={() => navigate(routes.recruiterNotifications)}>
+      <IconButton ariaLabel={t("studentNav.messages")} onClick={() => navigate(routes.recruiterNotifications)}>
         <Icon name="Bell" size={20} />
       </IconButton>
       <Button
@@ -249,7 +248,7 @@ function RecruiterMobileActions() {
         iconLeft={<Icon name="Plus" size={15} />}
         onClick={() => navigate(routes.recruiterPostGig)}
       >
-        Post
+        {t("common.post")}
       </Button>
     </>
   );
@@ -257,6 +256,15 @@ function RecruiterMobileActions() {
 
 export function RecruiterLayout() {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
+
+  const mobileTabs: ReadonlyArray<TabItem> = [
+    { label: t("recruiterNav.home"), icon: "LayoutGrid", to: routes.recruiterDashboard },
+    { label: t("recruiterNav.talent"), icon: "Users", to: routes.recruiterBrowseTalent },
+    { label: t("recruiterNav.applicants"), icon: "Inbox", to: routes.recruiterApplicants },
+    { label: t("recruiterNav.messages"), icon: "Mail", to: routes.recruiterMessages },
+    { label: t("recruiterNav.settings"), icon: "Settings", to: routes.recruiterSettings },
+  ];
 
   if (isMobile) {
     return (

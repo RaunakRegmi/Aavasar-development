@@ -21,6 +21,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { Button, Checkbox, Input, SegmentedControl, useToast } from "@shared/ui";
 import { AuthSplitLayout } from "@shared/layouts";
 import { Icon } from "@shared/icons";
@@ -49,6 +50,7 @@ type Role = "student" | "recruiter";
 export default function SignUpPage() {
   const navigate = useNavigate();
   const toast = useToast();
+  const { t } = useTranslation();
   const [role, setRole] = useState<Role>("student");
   const [agree, setAgree] = useState(false);
   const signUp = useSignUp();
@@ -115,7 +117,7 @@ export default function SignUpPage() {
             margin: "0 0 6px",
           }}
         >
-          Create your account
+          {t("signUp.title")}
         </h1>
         <p
           style={{
@@ -125,7 +127,7 @@ export default function SignUpPage() {
             margin: 0,
           }}
         >
-          Join the community and start your journey today.
+          {t("signUp.subtitle")}
         </p>
       </div>
 
@@ -143,45 +145,45 @@ export default function SignUpPage() {
               marginBottom: 8,
             }}
           >
-            I want to join as a:
+            {t("signUp.joinAs")}
           </div>
           <SegmentedControl<Role>
             value={role}
             onChange={setRole}
             options={[
-              { value: "student", label: "Student", icon: <Icon name="GraduationCap" size={18} /> },
-              { value: "recruiter", label: "Recruiter", icon: <Icon name="Briefcase" size={18} /> },
+              { value: "student", label: t("signUp.student"), icon: <Icon name="GraduationCap" size={18} /> },
+              { value: "recruiter", label: t("signUp.recruiter"), icon: <Icon name="Briefcase" size={18} /> },
             ]}
           />
         </div>
 
         <Input
-          label="Full Name"
-          placeholder="John Doe"
+          label={t("signUp.fullName")}
+          placeholder={t("signUp.fullNamePlaceholder")}
           autoComplete="name"
           error={errors.fullName?.message}
           {...register("fullName")}
         />
         <Input
-          label={role === "student" ? "Campus Email" : "Work Email"}
+          label={role === "student" ? t("signUp.campusEmail") : t("signUp.workEmail")}
           type="email"
           placeholder={
-            role === "student" ? "you@university.edu" : "you@company.com"
+            role === "student" ? t("signUp.studentEmailPlaceholder") : t("signUp.recruiterEmailPlaceholder")
           }
           autoComplete="email"
           error={errors.email?.message}
           {...register("email")}
         />
         <Input
-          label="Password"
+          label={t("signUp.password")}
           passwordToggle
           autoComplete="new-password"
-          helper="8+ characters, with at least one letter and one number."
+          helper={t("signUp.passwordHelper")}
           error={errors.password?.message}
           {...register("password")}
         />
         <Input
-          label="Confirm Password"
+          label={t("signUp.confirmPassword")}
           passwordToggle
           autoComplete="new-password"
           error={errors.confirmPassword?.message}
@@ -191,7 +193,7 @@ export default function SignUpPage() {
         <Checkbox
           checked={agree}
           onChange={(e) => setAgree(e.target.checked)}
-          label="I agree to the Terms of Service and Privacy Policy."
+          label={t("signUp.agree")}
         />
 
         <Button
@@ -201,7 +203,7 @@ export default function SignUpPage() {
           full
           disabled={!agree || isSubmitting}
         >
-          {isSubmitting ? "Creating Account…" : "Create Account"}
+          {isSubmitting ? t("signUp.submitting") : t("signUp.submit")}
         </Button>
 
         <div
@@ -221,7 +223,7 @@ export default function SignUpPage() {
               letterSpacing: "0.06em",
             }}
           >
-            OR CONTINUE WITH
+            {t("common.or")}
           </span>
           <span style={{ flex: 1, height: 1, background: "var(--border-default)" }} />
         </div>
@@ -246,7 +248,7 @@ export default function SignUpPage() {
             color: "var(--text-muted)",
           }}
         >
-          Already have an account?{" "}
+          {t("signUp.haveAccount")}{" "}
           <Link
             to={routes.logIn}
             style={{
@@ -255,7 +257,7 @@ export default function SignUpPage() {
               textDecoration: "none",
             }}
           >
-            Log in
+            {t("signUp.loginLink")}
           </Link>
         </div>
       </form>

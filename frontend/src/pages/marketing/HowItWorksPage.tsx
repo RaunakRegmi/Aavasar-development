@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { HowItWorks } from "./sections/HowItWorks";
 import { CtaBand } from "./sections/CtaBand";
 import { routes } from "@shared/config/routes";
 
 export default function HowItWorksPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <main>
       <div className="container-page" style={{ paddingTop: 64 }}>
@@ -19,16 +21,16 @@ export default function HowItWorksPage() {
           }}
         >
           <FeatureCard
-            title="Safe & Secure"
-            description="All profiles are verified. Payments are escrow-protected until work is delivered."
+            title={t("howItWorks.card1Title")}
+            description={t("howItWorks.card1Body")}
           />
           <FeatureCard
-            title="Flexible Hours"
-            description="Work around your class schedule. Set your own availability and commit to what fits."
+            title={t("howItWorks.card2Title")}
+            description={t("howItWorks.card2Body")}
           />
           <FeatureCard
-            title="Build Your Portfolio"
-            description="Every gig completed adds to your professional portfolio with real client feedback."
+            title={t("howItWorks.card3Title")}
+            description={t("howItWorks.card3Body")}
           />
         </div>
       </div>
