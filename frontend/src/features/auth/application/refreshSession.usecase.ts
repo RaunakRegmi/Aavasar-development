@@ -22,13 +22,21 @@ export function refreshSession(): Promise<string | null> {
       const next = await authService.refreshSession({
         refreshToken: session.refreshToken,
       });
-      useAuthStore.getState().setSession(next);
+      // Defensive merge — if the backend ever omits refreshToken from the
+      // response (the wire schema marks it optional for future cookie-based
+      // flows), keep the existing one so the next refresh still has a
+      // credential to present. expiresAt + accessToken always come fresh
+      // from the server.
+      useAuthStore.getState().setSession({
+        ...next,
+        refreshToken: next.refreshToken ?? session.refreshToken,
+      });
       return next.accessToken;
     } catch (err) {
       // Only end the session when the refresh token is DEFINITIVELY rejected
       // (401/403). Transient failures — server 5xx (e.g. DB down), network,
-      // timeout — must NOT log the user out; keep the session so a later
-      // request retries once the backend recovers.
+      // timeout, rate-limit (429) — must NOT log the user out; keep the
+      // session so a later request retries once the backend recovers.
       if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
         useAuthStore.getState().clear();
       }

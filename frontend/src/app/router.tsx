@@ -14,6 +14,8 @@ const ForgotPasswordPage = lazy(() => import("@pages/marketing/ForgotPasswordPag
 const ResetPasswordPage = lazy(() => import("@pages/marketing/ResetPasswordPage"));
 const HowItWorksPage = lazy(() => import("@pages/marketing/HowItWorksPage"));
 const PricingPage = lazy(() => import("@pages/marketing/PricingPage"));
+const AboutPage = lazy(() => import("@pages/marketing/AboutPage"));
+const ContactPage = lazy(() => import("@pages/marketing/ContactPage"));
 const OnboardingPage = lazy(() => import("@pages/onboarding/OnboardingPage"));
 const StudentDashboardPage = lazy(() => import("@pages/student/StudentDashboardPage"));
 const StudentFindWorkPage = lazy(() => import("@pages/student/StudentFindWorkPage"));
@@ -70,8 +72,8 @@ const router = createBrowserRouter([
       { path: routes.gigs, element: stub("Browse Gigs", "Our public gig listing is opening soon. In the meantime, sign up to see live opportunities tailored to you.") },
       { path: routes.gig, element: stub("Gig Details", "The full gig detail page is on the way.") },
       { path: routes.howItWorks, element: withSuspense(<HowItWorksPage />) },
-      { path: routes.about, element: stub("About Aavasar", "Our story page is being written.") },
-      { path: routes.contact, element: stub("Contact Us", "A contact form is on the way. For now, reach out at hello@aavasar.np.") },
+      { path: routes.about, element: withSuspense(<AboutPage />) },
+      { path: routes.contact, element: withSuspense(<ContactPage />) },
       { path: routes.pricing, element: withSuspense(<PricingPage />) },
       { path: routes.forBusinesses, element: stub("For Businesses", "Hire vetted student talent — full pitch page coming soon.") },
       { path: routes.forStudents, element: stub("For Students", "Find gigs that fit your schedule — full pitch page coming soon.") },

@@ -64,9 +64,15 @@ export function makeAuthRouter(controller: AuthController, service: AuthService)
     validate({ body: LogInRequestSchema }),
     asyncHandler(controller.logIn),
   );
+  // /refresh is intentionally NOT behind authRateLimit. The access token
+  // is short-lived and a single user with multiple tabs (or even a single
+  // tab with a few concurrent queries on resume) can easily exceed the
+  // shared auth rate budget — the symptom is "pages stop loading after a
+  // while and only re-login fixes it" because every API call fires a 401
+  // → refresh that the limiter rejects. The endpoint is still gated by
+  // the cryptographic refresh-token check.
   router.post(
     "/refresh",
-    authRateLimit,
     validate({ body: RefreshRequestSchema }),
     asyncHandler(controller.refresh),
   );

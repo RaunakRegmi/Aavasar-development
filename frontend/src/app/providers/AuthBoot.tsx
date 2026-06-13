@@ -119,28 +119,42 @@ export function AuthBoot({ children }: { children: ReactNode }) {
       reportTransportError(err, toast);
     });
 
-    // (5) keep-alive watchdog — proactively refresh shortly before the
-    //     access token expires so an open tab is never kicked out
-    //     mid-session. Only fall back to a clean logout when there's no
-    //     refresh token to renew with.
-    const interval = window.setInterval(() => {
+    // (5) keep-alive watchdog — proactively refresh well before the access
+    //     token expires so an open tab is never kicked out mid-session.
+    //     Generous buffer (5 minutes) means even a long-running render or
+    //     a flurry of concurrent queries can't race expiry. The watchdog
+    //     ALSO fires on visibility-change so a tab that was backgrounded
+    //     (laptop sleep, alt-tab) refreshes the moment it's foregrounded.
+    //     Only fall back to a clean logout when there's no refresh token
+    //     to renew with.
+    const REFRESH_BUFFER_MS = 5 * 60_000;
+    const tick = () => {
       const sess = useAuthStore.getState().session;
       if (!sess) return;
       const msLeft = Date.parse(sess.expiresAt) - Date.now();
-      if (msLeft > 60_000) return; // not near expiry yet
+      if (msLeft > REFRESH_BUFFER_MS) return; // not near expiry yet
       if (sess.refreshToken) {
         void refreshSession();
-      } else {
+      } else if (msLeft <= 0) {
+        // Truly expired AND no way to renew → finalize the logout.
         useAuthStore.getState().clear();
         toast.info("Your session expired", {
           description: "Sign in again to keep working.",
         });
       }
-    }, 30_000);
+    };
+    const interval = window.setInterval(tick, 30_000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tick();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
 
     return () => {
       unsubQueries();
       window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
     };
   }, [toast, qc]);
 
