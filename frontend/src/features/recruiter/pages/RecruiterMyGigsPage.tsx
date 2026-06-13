@@ -49,6 +49,26 @@ export default function RecruiterMyGigsPage() {
     }
   };
 
+  const handleTransition = async (
+    id: string,
+    status: GigStatus,
+    successMsg: string,
+    confirmMsg?: string,
+  ) => {
+    if (confirmMsg && !window.confirm(confirmMsg)) return;
+    setPendingId(id);
+    try {
+      await publish.mutateAsync({ id, status });
+      toast.success(successMsg);
+    } catch (err) {
+      toast.error("Could not update gig", {
+        description: err instanceof Error ? err.message : undefined,
+      });
+    } finally {
+      setPendingId(null);
+    }
+  };
+
   const handleDelete = async (id: string, title: string) => {
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
     setPendingId(id);
@@ -215,15 +235,48 @@ export default function RecruiterMyGigsPage() {
                         {busy ? "…" : "Publish"}
                       </Button>
                     )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={busy}
-                      iconLeft={<Icon name="Trash2" size={14} />}
-                      onClick={() => handleDelete(g.id, g.title)}
-                    >
-                      Delete
-                    </Button>
+                    {g.status === "active" && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={busy}
+                        iconLeft={<Icon name="ClipboardCheck" size={14} />}
+                        onClick={() =>
+                          handleTransition(g.id, "reviewing", "Moved to review.")
+                        }
+                      >
+                        {busy ? "…" : "Start review"}
+                      </Button>
+                    )}
+                    {g.status === "reviewing" && (
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        disabled={busy}
+                        iconLeft={<Icon name="CheckCircle2" size={14} />}
+                        onClick={() =>
+                          handleTransition(
+                            g.id,
+                            "completed",
+                            "Gig completed — points awarded to the hired student.",
+                            `Mark "${g.title}" complete? This pays out points to the hired student and can't be undone.`,
+                          )
+                        }
+                      >
+                        {busy ? "…" : "Mark complete"}
+                      </Button>
+                    )}
+                    {g.status !== "completed" && g.status !== "rejected" && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={busy}
+                        iconLeft={<Icon name="Trash2" size={14} />}
+                        onClick={() => handleDelete(g.id, g.title)}
+                      >
+                        Delete
+                      </Button>
+                    )}
                   </div>
                 </div>
               </Card>

@@ -100,19 +100,16 @@ export class AuthService {
     const record = await this.authRepo.findRefreshTokenById(claims.jti);
     const tokenHash = hashRefreshToken(rawRefreshToken);
 
-    if (!record || record.tokenHash !== tokenHash) {
-      // Token presented does not match the row → potential replay.
-      // Kill all sessions for the claimed user as a precaution.
-      await this.users.invalidateAllSessions(claims.sub);
-      logger.warn({ event: "auth.refresh.mismatch", userId: claims.sub });
+    // We do NOT rotate the refresh token on every refresh. Rotation +
+    // "invalidate all sessions on replay" caused a cascading lockout:
+    // two tabs (or StrictMode, or a retried request) would present the
+    // same just-rotated token, trip replay, bump tokenVersion, and reject
+    // every outstanding token until a fresh login. A stable refresh token
+    // (short access token + sliding 30-day refresh window) avoids that.
+    // On a mismatch we reject THIS request only — never burn the family.
+    if (!record || record.tokenHash !== tokenHash || record.revokedAt) {
+      logger.warn({ event: "auth.refresh.rejected", userId: claims.sub });
       throw new UnauthorizedError("Refresh token rejected.");
-    }
-    if (record.revokedAt) {
-      // The exact row was revoked but still presented → almost certainly
-      // a stolen token replay. Burn the session family.
-      await this.users.invalidateAllSessions(claims.sub);
-      logger.warn({ event: "auth.refresh.replay", userId: claims.sub });
-      throw new UnauthorizedError("Refresh token has been revoked.");
     }
     if (record.expiresAt.getTime() <= Date.now()) {
       throw new UnauthorizedError("Refresh token expired.");
@@ -120,41 +117,24 @@ export class AuthService {
 
     const user = await this.users.findById(claims.sub);
     if (!user) throw new UnauthorizedError("Account not found.");
+    // tokenVersion still hard-invalidates on password change / logout-all.
     if (user.tokenVersion !== claims.tokenVersion) {
       throw new UnauthorizedError("Session ended by a security event.");
     }
 
-    // Rotate — preserve the original "remember" window so a remembered
-    // session keeps its long TTL on every refresh (sliding window).
-    // Tokens issued before this claim existed default to remembered.
+    // Keep the SAME refresh token; just slide its expiry forward so an
+    // active "remember me" session stays alive. Re-issue only the short
+    // access token.
     const remember = claims.remember ?? true;
-    const rotateTtl = remember
+    const ttl = remember
       ? env.jwt.refreshTtlRememberSeconds
       : env.jwt.refreshTtlSessionSeconds;
-    const newId = crypto.randomUUID();
-    const newRefreshToken = signRefreshToken(
-      {
-        sub: user.id,
-        jti: newId,
-        tokenVersion: user.tokenVersion,
-        remember,
-      },
-      rotateTtl,
-    );
-    const newExpiresAt = new Date(Date.now() + rotateTtl * 1000);
-
-    await this.authRepo.rotateRefreshToken({
-      oldId: record.id,
-      newId,
-      userId: user.id,
-      newTokenHash: hashRefreshToken(newRefreshToken),
-      newExpiresAt,
-    });
+    await this.authRepo.touchRefreshToken(record.id, new Date(Date.now() + ttl * 1000));
 
     const accessToken = signAccessToken({ sub: user.id, role: user.role, email: user.email });
     return {
       accessToken,
-      refreshToken: newRefreshToken,
+      refreshToken: rawRefreshToken,
       expiresAt: new Date(Date.now() + env.jwt.accessTtlSeconds * 1000).toISOString(),
       user: toSessionUser(user),
     };

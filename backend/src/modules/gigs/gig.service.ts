@@ -14,11 +14,19 @@ import { GigRepository } from "./gig.repository";
 import { parseSort, type Pagination } from "@lib/pagination";
 import { ForbiddenError, NotFoundError } from "@lib/errors";
 import type { AuthedUser } from "@middlewares/auth";
+import type { BillingRepository } from "@modules/billing/billing.repository";
+import { effectiveGigCap, planFor } from "@modules/billing/plans";
+import type { RewardsService } from "@modules/rewards/rewards.service";
+import { logger } from "@config/logger";
 
 const SORTABLE_FIELDS = ["postedAt", "title", "payAmountMinor"] as const;
 
 export class GigService {
-  constructor(private readonly repo: GigRepository) {}
+  constructor(
+    private readonly repo: GigRepository,
+    private readonly billingRepo: BillingRepository,
+    private readonly rewards: RewardsService,
+  ) {}
 
   // ---------- Read ----------
 
@@ -72,6 +80,11 @@ export class GigService {
     if (actor.role !== "recruiter" && actor.role !== "admin") {
       throw new ForbiddenError("Only recruiters can post gigs.");
     }
+    // Publishing immediately makes a gig active — gate it against the plan's
+    // active-gig quota. Saving a draft never counts.
+    if (input.publish) {
+      await this.assertActiveGigQuota(actor);
+    }
     const row = await this.repo.create({
       title: input.title,
       category: input.category,
@@ -101,6 +114,10 @@ export class GigService {
 
     if (patch.status && patch.status !== existing.status) {
       this.validateTransition(existing.status, patch.status);
+      // Publishing a draft consumes an active-gig slot — enforce the quota.
+      if (patch.status === "active" && existing.status !== "active") {
+        await this.assertActiveGigQuota(actor);
+      }
     }
 
     const row = await this.repo.update(id, {
@@ -117,6 +134,21 @@ export class GigService {
       ...(patch.isPremium !== undefined ? { isPremium: patch.isPremium } : {}),
       ...(patch.status !== undefined ? { status: patch.status } : {}),
     });
+
+    // Gig just reached "completed" → award points to the accepted student(s).
+    // Best-effort: never let a rewards failure roll back the status change.
+    if (patch.status === "completed" && existing.status !== "completed") {
+      try {
+        await this.rewards.awardForGigCompletion({
+          id: row.id,
+          title: row.title,
+          payAmountMinor: row.payAmountMinor,
+        });
+      } catch (err) {
+        logger.error({ err, gigId: row.id }, "[gigs] failed to award completion points");
+      }
+    }
+
     return toGigDto(row);
   }
 
@@ -128,6 +160,27 @@ export class GigService {
   }
 
   // ---------- Guards ----------
+
+  /**
+   * Hard quota: a recruiter may only have `maxActiveGigs + extraGigSlots`
+   * active gigs for their tier. Admins are exempt. Professional/Enterprise
+   * are uncapped (Infinity → no check).
+   */
+  private async assertActiveGigQuota(actor: AuthedUser): Promise<void> {
+    if (actor.role === "admin") return;
+    const user = await this.billingRepo.findById(actor.id);
+    if (!user) return;
+    const cap = effectiveGigCap(user.subscriptionTier, user.extraGigSlots);
+    if (!Number.isFinite(cap)) return; // unlimited
+    const active = await this.billingRepo.countActiveGigs(actor.id);
+    if (active >= cap) {
+      const planName = planFor(user.subscriptionTier).name;
+      throw new ForbiddenError(
+        `Your ${planName} plan allows ${cap} active gig${cap === 1 ? "" : "s"}. ` +
+          `Upgrade to Professional or add extra gig slots to post more.`,
+      );
+    }
+  }
 
   private validateTransition(current: string, next: string): void {
     const allowed: Record<string, string[]> = {

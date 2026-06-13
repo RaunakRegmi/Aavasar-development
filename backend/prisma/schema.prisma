@@ -24,6 +24,14 @@ enum UserRole {
   admin
 }
 
+/// Recruiter subscription tiers. Mirrors `billing/plans.ts` (the single
+/// source of truth for per-tier limits) and the public pricing page.
+enum SubscriptionTier {
+  basic
+  professional
+  enterprise
+}
+
 /// Lifecycle states for a posted Gig. Matches `GigStatusSchema` in
 /// the frontend.
 enum GigStatus {
@@ -92,6 +100,24 @@ model User {
   /// Refresh tokens carry the value at issue time; mismatch → reject.
   tokenVersion          Int      @default(0) @map("token_version")
 
+  // ---- Billing / subscription (recruiters) ----
+  /// Stripe Customer id, created lazily on first checkout. Null until then.
+  stripeCustomerId      String?  @unique @map("stripe_customer_id")
+  /// Current plan. Drives the hard quota gates in gig/application services.
+  subscriptionTier      SubscriptionTier @default(basic) @map("subscription_tier")
+  /// Mirror of the Stripe subscription status (active|past_due|canceled…).
+  subscriptionStatus    String?  @map("subscription_status")
+  /// End of the current paid period; set from Stripe webhooks.
+  currentPeriodEnd      DateTime? @map("current_period_end")
+  /// Add-on capacity bought on top of the plan (e.g. "+5 Extra Gig Slots").
+  extraGigSlots         Int      @default(0) @map("extra_gig_slots")
+
+  // ---- Gamification (students) ----
+  /// Spendable points balance. Earned on gig completion, spent on perks.
+  points                Int      @default(0)
+  /// Functional perk: profile is featured/boosted until this instant.
+  featuredUntil         DateTime? @map("featured_until")
+
   createdAt             DateTime @default(now()) @map("created_at")
   updatedAt             DateTime @updatedAt @map("updated_at")
 
@@ -106,6 +132,8 @@ model User {
   conversationsAsRecruiter Conversation[] @relation("ConversationRecruiter")
   conversationsAsStudent   Conversation[] @relation("ConversationStudent")
   sentMessages          Message[]        @relation("MessageSender")
+  pointsTransactions    PointsTransaction[]
+  perkRedemptions       PerkRedemption[]
 
   @@map("users")
 }
@@ -286,6 +314,7 @@ enum NotificationKind {
   payout_settled
   profile_verified
   gig_completed
+  points_awarded
 }
 
 model Notification {
@@ -343,4 +372,41 @@ model Message {
 
   @@index([conversationId, createdAt])
   @@map("messages")
+}
+
+/// Append-only ledger of every points change. `User.points` is the
+/// running total; this table is the audit trail / "earn history".
+model PointsTransaction {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  /// Signed: positive = earned, negative = spent.
+  delta     Int
+  /// Machine reason: "gig_completed", "perk_redeemed", "admin_grant"…
+  reason    String
+  /// Human-readable line shown in the earn history.
+  label     String
+  /// Related gig, when the points came from completing one.
+  gigId     String?  @map("gig_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("points_transactions")
+}
+
+/// One row per perk a student has bought with points.
+model PerkRedemption {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  /// Catalog key from `rewards/perks.ts`.
+  perkKey   String   @map("perk_key")
+  /// Points spent (snapshot of the catalog cost at redemption time).
+  cost      Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("perk_redemptions")
 }

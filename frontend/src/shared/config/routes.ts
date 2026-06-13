@@ -68,6 +68,12 @@ export const routes = {
   recruiterNotifications: "/recruiter/notifications", //                      TODO STUB
   recruiterReports: "/recruiter/reports",             //                      TODO STUB
   recruiterUpgrade: "/recruiter/upgrade",             //                      TODO STUB
+  recruiterBilling: "/recruiter/billing",             //                       NOW LIVE
+  recruiterBillingSuccess: "/recruiter/billing/success",
+  recruiterBillingCancel: "/recruiter/billing/cancel",
+
+  // ---- Student perks (gamification) ----
+  studentPerks: "/student/perks",                     //                       NOW LIVE
 } as const;
 
 export type RoutePath = (typeof routes)[keyof typeof routes];

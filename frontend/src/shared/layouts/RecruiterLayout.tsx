@@ -18,6 +18,7 @@ const sideItems: ReadonlyArray<{ label: string; icon: IconName; to: string }> = 
   { label: "My Gigs", icon: "Briefcase", to: routes.recruiterMyGigs },
   { label: "Applicants", icon: "Users", to: routes.recruiterApplicants },
   { label: "Messages", icon: "Mail", to: routes.recruiterMessages },
+  { label: "Billing", icon: "CreditCard", to: routes.recruiterBilling },
   { label: "Settings", icon: "Settings", to: routes.recruiterSettings },
 ];
 
@@ -191,7 +192,7 @@ function SideNav() {
       <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
         <button
           type="button"
-          onClick={() => navigate(routes.recruiterUpgrade)}
+          onClick={() => navigate(routes.recruiterBilling)}
           style={{
             fontFamily: "var(--font-text)",
             fontSize: 15,

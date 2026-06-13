@@ -30,6 +30,8 @@ const RecruiterTalentDetailPage = lazy(() => import("@features/recruiter/pages/R
 const ApplicantDetailPage = lazy(() => import("@pages/recruiter/ApplicantDetailPage"));
 const MessagesPage = lazy(() => import("@features/messaging/pages/MessagesPage"));
 const StudentMyGigsPage = lazy(() => import("@pages/student/StudentMyGigsPage"));
+const RecruiterBillingPage = lazy(() => import("@features/billing/pages/RecruiterBillingPage"));
+const StudentPerksPage = lazy(() => import("@features/rewards/pages/StudentPerksPage"));
 const ComingSoonPage = lazy(() => import("@pages/ComingSoonPage"));
 const AuthCallbackPage = lazy(() => import("@pages/auth/AuthCallbackPage"));
 
@@ -105,6 +107,7 @@ const router = createBrowserRouter([
           { path: routes.studentMessages, element: withSuspense(<MessagesPage />) },
           { path: routes.studentMessageThread, element: withSuspense(<MessagesPage />) },
           { path: routes.studentLearning, element: stub("Learning", "Your course progress and recommended tracks.") },
+          { path: routes.studentPerks, element: withSuspense(<StudentPerksPage />) },
           { path: routes.studentProfile, element: withSuspense(<StudentProfilePage />) },
           { path: routes.studentProfileEdit, element: withSuspense(<StudentProfilePage />) },
           { path: routes.studentNotifications, element: withSuspense(<StudentProfilePage />) },
@@ -137,7 +140,10 @@ const router = createBrowserRouter([
           { path: routes.recruiterResources, element: stub("Resources") },
           { path: routes.recruiterNotifications, element: withSuspense(<RecruiterProfilePage />) },
           { path: routes.recruiterReports, element: stub("Talent Pulse Reports") },
-          { path: routes.recruiterUpgrade, element: stub("Upgrade Plan") },
+          { path: routes.recruiterUpgrade, element: <Navigate to={routes.recruiterBilling} replace /> },
+          { path: routes.recruiterBilling, element: withSuspense(<RecruiterBillingPage />) },
+          { path: routes.recruiterBillingSuccess, element: withSuspense(<RecruiterBillingPage />) },
+          { path: routes.recruiterBillingCancel, element: withSuspense(<RecruiterBillingPage />) },
         ],
       },
     ],

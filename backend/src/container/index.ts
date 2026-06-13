@@ -48,6 +48,18 @@ import { MessageRepository } from "@modules/messaging/message.repository";
 import { MessageService } from "@modules/messaging/message.service";
 import { MessageController } from "@modules/messaging/message.controller";
 
+import { DashboardRepository } from "@modules/dashboard/dashboard.repository";
+import { DashboardService } from "@modules/dashboard/dashboard.service";
+import { DashboardController } from "@modules/dashboard/dashboard.controller";
+
+import { BillingRepository } from "@modules/billing/billing.repository";
+import { BillingService } from "@modules/billing/billing.service";
+import { BillingController } from "@modules/billing/billing.controller";
+
+import { RewardsRepository } from "@modules/rewards/rewards.repository";
+import { RewardsService } from "@modules/rewards/rewards.service";
+import { RewardsController } from "@modules/rewards/rewards.controller";
+
 export interface Container {
   db: PrismaClient;
   userRepo: UserRepository;
@@ -80,6 +92,18 @@ export interface Container {
   messageRepo: MessageRepository;
   messageService: MessageService;
   messageController: MessageController;
+
+  dashboardRepo: DashboardRepository;
+  dashboardService: DashboardService;
+  dashboardController: DashboardController;
+
+  billingRepo: BillingRepository;
+  billingService: BillingService;
+  billingController: BillingController;
+
+  rewardsRepo: RewardsRepository;
+  rewardsService: RewardsService;
+  rewardsController: RewardsController;
 }
 
 export type ContainerOverrides = Partial<Container>;
@@ -95,13 +119,16 @@ export function makeContainer(overrides: ContainerOverrides = {}): Container {
   const appRepo = overrides.appRepo ?? new ApplicationRepository(db);
   const companyRepo = overrides.companyRepo ?? new CompanyRepository(db);
   const notificationRepo = overrides.notificationRepo ?? new NotificationRepository(db);
+  const billingRepo = overrides.billingRepo ?? new BillingRepository(db);
+  const rewardsRepo = overrides.rewardsRepo ?? new RewardsRepository(db);
 
   const notificationService = overrides.notificationService ?? new NotificationService(notificationRepo);
+  const rewardsService = overrides.rewardsService ?? new RewardsService(rewardsRepo, notificationService);
   const authService = overrides.authService ?? new AuthService(userRepo, authRepo);
-  const gigService = overrides.gigService ?? new GigService(gigRepo);
+  const gigService = overrides.gigService ?? new GigService(gigRepo, billingRepo, rewardsService);
   const uploadService = overrides.uploadService ?? new UploadService(uploadRepo, userRepo);
   const meService = overrides.meService ?? new MeService(meRepo);
-  const appService = overrides.appService ?? new ApplicationService(appRepo, notificationService);
+  const appService = overrides.appService ?? new ApplicationService(appRepo, notificationService, billingRepo);
   const companyService = overrides.companyService ?? new CompanyService(companyRepo);
   const talentService = overrides.talentService ?? new TalentService(userRepo);
 
@@ -119,11 +146,23 @@ export function makeContainer(overrides: ContainerOverrides = {}): Container {
     overrides.messageService ?? new MessageService(messageRepo, userRepo, notificationService);
   const messageController = overrides.messageController ?? new MessageController(messageService);
 
+  const dashboardRepo = overrides.dashboardRepo ?? new DashboardRepository(db);
+  const dashboardService = overrides.dashboardService ?? new DashboardService(dashboardRepo);
+  const dashboardController = overrides.dashboardController ?? new DashboardController(dashboardService);
+
+  const billingService = overrides.billingService ?? new BillingService(billingRepo);
+  const billingController = overrides.billingController ?? new BillingController(billingService);
+
+  const rewardsController = overrides.rewardsController ?? new RewardsController(rewardsService);
+
   return {
     db,
     userRepo, authRepo, gigRepo, uploadRepo, meRepo, appRepo, companyRepo, notificationRepo,
     notificationService, authService, gigService, uploadService, meService, appService, companyService, talentService,
     authController, gigController, uploadController, meController, appController, companyController, talentController, notificationController,
     messageRepo, messageService, messageController,
+    dashboardRepo, dashboardService, dashboardController,
+    billingRepo, billingService, billingController,
+    rewardsRepo, rewardsService, rewardsController,
   };
 }

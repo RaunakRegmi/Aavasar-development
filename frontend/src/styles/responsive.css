@@ -41,6 +41,11 @@
   .aav-split { grid-template-columns: 1fr; }
 }
 
+/* Perks page: catalogue + history side-by-side, stacks on small screens. */
+@media (max-width: 860px) {
+  .aav-perks-grid { grid-template-columns: 1fr !important; }
+}
+
 /* KPI / stat strip — auto-fits 4 → 2 → 1 by available width. */
 .aav-kpi {
   display: grid;

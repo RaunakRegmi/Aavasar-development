@@ -9,11 +9,14 @@ import type {
   ListMyApplicationsQuery,
 } from "./application.contracts";
 import type { NotificationService } from "../notifications/notification.service";
+import type { BillingRepository } from "@modules/billing/billing.repository";
+import { planFor } from "@modules/billing/plans";
 
 export class ApplicationService {
   constructor(
     private readonly repo: ApplicationRepository,
     private readonly notifications: NotificationService,
+    private readonly billingRepo: BillingRepository,
   ) {}
 
   async listMyApplications(
@@ -33,6 +36,9 @@ export class ApplicationService {
     if (existing) {
       throw new ConflictError("You have already applied to this gig.");
     }
+    // Hard quota: a Basic recruiter only receives N applications/month
+    // across their gigs. Once they hit it, new applications are blocked.
+    await this.assertGigAcceptingApplications(input.gigId);
     const row = await this.repo.create({
       userId: actor.id,
       gigId: input.gigId,
@@ -112,6 +118,26 @@ export class ApplicationService {
       link: `/student/gigs/${row.gigId}`,
     });
     return this.toDto(row);
+  }
+
+  /**
+   * Enforce the gig owner's monthly application quota. Uncapped plans
+   * (Professional/Enterprise) skip the check. Phrased gig-side so the
+   * applying student isn't shown the recruiter's billing details.
+   */
+  private async assertGigAcceptingApplications(gigId: string): Promise<void> {
+    const gig = await this.repo.findGigOwner(gigId);
+    if (!gig) throw new NotFoundError("Gig not found.");
+    const owner = await this.billingRepo.findById(gig.postedByUserId);
+    if (!owner) return;
+    const limit = planFor(owner.subscriptionTier).limits.applicationsPerMonth;
+    if (!Number.isFinite(limit)) return; // unlimited
+    const received = await this.billingRepo.countApplicationsThisMonth(owner.id, new Date());
+    if (received >= limit) {
+      throw new ForbiddenError(
+        "This gig has reached its application limit for the month. Please check back next month.",
+      );
+    }
   }
 
   /** Authorize a recruiter (or admin) to act on a gig's applicants. */

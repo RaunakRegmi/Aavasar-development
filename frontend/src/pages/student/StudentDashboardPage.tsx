@@ -7,6 +7,7 @@ import { Avatar, Badge, Button, Card, ProgressBar, Skeleton, StatCard } from "@s
 import { Icon } from "@shared/icons";
 import { useCurrentUser } from "@features/auth";
 import { useStudentDashboard } from "@features/dashboard";
+import { useRewards } from "@features/rewards";
 import { formatNpr, splitDayMonth } from "@shared/lib/utils";
 import { routes, gigPath } from "@shared/config/routes";
 
@@ -16,6 +17,7 @@ export default function StudentDashboardPage() {
   const navigate = useNavigate();
   const user = useCurrentUser();
   const { kpis, activeGigs, upcoming, course } = useStudentDashboard();
+  const rewards = useRewards();
 
   const firstName = user?.fullName.split(" ")[0] ?? "there";
 
@@ -62,13 +64,39 @@ export default function StudentDashboardPage() {
             </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          iconLeft={<Icon name="Settings" size={16} />}
-          onClick={() => navigate(routes.studentProfileEdit)}
-        >
-          Edit Profile
-        </Button>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            type="button"
+            onClick={() => navigate(routes.studentPerks)}
+            title="View your perks & rewards"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: "var(--brand-50, var(--surface-2))",
+              border: "1px solid var(--brand-200, var(--border-default))",
+              borderRadius: "var(--radius-full)",
+              padding: "8px 14px",
+              cursor: "pointer",
+              fontFamily: "var(--font-display)",
+              fontWeight: 700,
+              fontSize: 15,
+              color: "var(--brand-700)",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            <Icon name="Sparkles" size={16} />
+            {rewards.data ? rewards.data.balance.toLocaleString() : "—"}
+            <span style={{ fontWeight: 600, fontSize: 13, color: "var(--text-muted)" }}>pts</span>
+          </button>
+          <Button
+            variant="outline"
+            iconLeft={<Icon name="Settings" size={16} />}
+            onClick={() => navigate(routes.studentProfileEdit)}
+          >
+            Edit Profile
+          </Button>
+        </div>
       </div>
 
       {/* KPI strip */}

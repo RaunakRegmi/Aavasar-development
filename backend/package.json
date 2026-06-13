@@ -6,7 +6,8 @@
   "description": "Aavasar — student-talent marketplace backend (Node.js + Express + Prisma).",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "bash scripts/dev.sh",
+    "dev:api": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
@@ -14,6 +15,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
+    "stripe:setup": "tsx scripts/stripe-setup.ts",
     "test": "vitest run"
   },
   "dependencies": {
@@ -34,6 +36,7 @@
     "pino": "^9.3.2",
     "pino-http": "^10.2.0",
     "rate-limiter-flexible": "^5.0.3",
+    "stripe": "^22.2.1",
     "ws": "^8.21.0",
     "zod": "^3.23.8"
   },

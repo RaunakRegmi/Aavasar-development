@@ -43,6 +43,12 @@ import { makeCompanyRouter } from "@modules/companies/company.routes";
 import { makeTalentRouter } from "@modules/users/talent.routes";
 import { makeNotificationRouter } from "@modules/notifications/notification.routes";
 import { makeMessageRouter } from "@modules/messaging/message.routes";
+import {
+  makeStudentDashboardRouter,
+  makeRecruiterDashboardRouter,
+} from "@modules/dashboard/dashboard.routes";
+import { makeBillingRouter, makeStripeWebhookRouter } from "@modules/billing/billing.routes";
+import { makeRewardsRouter } from "@modules/rewards/rewards.routes";
 import { makeContainer, type Container } from "@container/index";
 
 export function makeApp(container: Container = makeContainer()): Express {
@@ -70,6 +76,11 @@ export function makeApp(container: Container = makeContainer()): Express {
   );
 
   // (3) parsers
+  // Stripe webhook MUST see the raw, unparsed body for signature
+  // verification — mount it BEFORE express.json so the JSON parser
+  // doesn't consume the stream. The router applies express.raw itself.
+  app.use(`${env.apiBasePath}/webhooks/stripe`, makeStripeWebhookRouter(container.billingController));
+
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
@@ -125,6 +136,10 @@ export function makeApp(container: Container = makeContainer()): Express {
   app.use(`${env.apiBasePath}/talent`, makeTalentRouter(container.talentController));
   app.use(`${env.apiBasePath}/notifications`, makeNotificationRouter(container.notificationController));
   app.use(`${env.apiBasePath}/conversations`, makeMessageRouter(container.messageController));
+  app.use(`${env.apiBasePath}/student/dashboard`, makeStudentDashboardRouter(container.dashboardController));
+  app.use(`${env.apiBasePath}/recruiter`, makeRecruiterDashboardRouter(container.dashboardController));
+  app.use(`${env.apiBasePath}/billing`, makeBillingRouter(container.billingController));
+  app.use(`${env.apiBasePath}/rewards`, makeRewardsRouter(container.rewardsController));
 
   // (10) 404
   app.use(notFound);

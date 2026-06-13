@@ -49,6 +49,18 @@ const RawEnvSchema = z.object({
   UPLOAD_MAX_AVATAR_BYTES: z.coerce.number().int().positive().default(2 * 1024 * 1024),
   UPLOAD_MAX_DOCUMENT_BYTES: z.coerce.number().int().positive().default(10 * 1024 * 1024),
 
+  // ---- Stripe (billing) ----
+  // All optional: with no secret key the billing endpoints return a clear
+  // "billing not configured" error instead of crashing at boot, so the
+  // rest of the app runs locally without Stripe creds.
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  STRIPE_PRICE_PROFESSIONAL: z.string().optional(),
+  STRIPE_PRICE_ADDON_GIGSLOTS: z.string().optional(),
+  STRIPE_PRICE_ADDON_FEATURED: z.string().optional(),
+  STRIPE_SUCCESS_URL: z.string().url().optional(),
+  STRIPE_CANCEL_URL: z.string().url().optional(),
+
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
 });
 
@@ -111,6 +123,20 @@ export const env = {
     publicBase: raw.UPLOAD_PUBLIC_BASE,
     maxAvatarBytes: raw.UPLOAD_MAX_AVATAR_BYTES,
     maxDocumentBytes: raw.UPLOAD_MAX_DOCUMENT_BYTES,
+  },
+
+  stripe: {
+    secretKey: raw.STRIPE_SECRET_KEY ?? null,
+    webhookSecret: raw.STRIPE_WEBHOOK_SECRET ?? null,
+    prices: {
+      professional: raw.STRIPE_PRICE_PROFESSIONAL ?? null,
+      addonGigSlots: raw.STRIPE_PRICE_ADDON_GIGSLOTS ?? null,
+      addonFeatured: raw.STRIPE_PRICE_ADDON_FEATURED ?? null,
+    },
+    // Fall back to the frontend origin so checkout still redirects somewhere
+    // sensible before the operator sets explicit return URLs.
+    successUrl: raw.STRIPE_SUCCESS_URL ?? `${raw.FRONTEND_ORIGIN}/recruiter/billing/success`,
+    cancelUrl: raw.STRIPE_CANCEL_URL ?? `${raw.FRONTEND_ORIGIN}/recruiter/billing/cancel`,
   },
 
   logLevel: raw.LOG_LEVEL,

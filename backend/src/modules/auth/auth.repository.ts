@@ -23,6 +23,11 @@ export class AuthRepository {
     return this.db.refreshToken.findUnique({ where: { id } });
   }
 
+  /** Slide a refresh token's expiry forward (no rotation). */
+  touchRefreshToken(id: string, expiresAt: Date): Promise<RefreshToken> {
+    return this.db.refreshToken.update({ where: { id }, data: { expiresAt } });
+  }
+
   /**
    * Atomic rotate: revoke the old token row (linking the replacement)
    * and insert the new one. Returns the new RefreshToken row.

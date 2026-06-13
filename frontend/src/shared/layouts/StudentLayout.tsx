@@ -25,6 +25,7 @@ const items: ReadonlyArray<NavItem> = [
   { label: "Find Work", icon: "Search", to: routes.studentFindWork },
   { label: "My Gigs", icon: "Briefcase", to: routes.studentMyGigs },
   { label: "Messages", icon: "MessageSquare", to: routes.studentMessages },
+  { label: "Perks", icon: "Sparkles", to: routes.studentPerks },
   { label: "Learning", icon: "GraduationCap", to: routes.studentLearning },
   { label: "Profile", icon: "User", to: routes.studentProfile },
 ];
