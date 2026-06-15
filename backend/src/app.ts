@@ -49,6 +49,7 @@ import {
 } from "@modules/dashboard/dashboard.routes";
 import { makeBillingRouter, makeStripeWebhookRouter } from "@modules/billing/billing.routes";
 import { makeRewardsRouter } from "@modules/rewards/rewards.routes";
+import { makeContactRouter } from "@modules/contact/contact.routes";
 import { makeContainer, type Container } from "@container/index";
 
 export function makeApp(container: Container = makeContainer()): Express {
@@ -140,6 +141,7 @@ export function makeApp(container: Container = makeContainer()): Express {
   app.use(`${env.apiBasePath}/recruiter`, makeRecruiterDashboardRouter(container.dashboardController));
   app.use(`${env.apiBasePath}/billing`, makeBillingRouter(container.billingController));
   app.use(`${env.apiBasePath}/rewards`, makeRewardsRouter(container.rewardsController));
+  app.use(`${env.apiBasePath}/contact`, makeContactRouter(container.contactController));
 
   // (10) 404
   app.use(notFound);

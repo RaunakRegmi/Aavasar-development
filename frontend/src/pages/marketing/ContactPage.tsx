@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Card, Input } from "@shared/ui";
 import { Icon, type IconName } from "@shared/icons";
+import { contactService } from "@features/contact/api/contact.service";
 
 const SUPPORT_EMAIL = "hello@aavasar.np";
 
@@ -125,17 +126,30 @@ function ContactForm() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
-    const href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
-      subject || t("contact.mailSubject"),
-    )}&body=${encodeURIComponent(body)}`;
-    window.location.assign(href);
-    setSent(true);
+    if (status === "sending") return;
+    setStatus("sending");
+    try {
+      await contactService.submit({
+        name,
+        email,
+        subject: subject.trim() || undefined,
+        message,
+      });
+      setStatus("sent");
+      setName("");
+      setEmail("");
+      setSubject("");
+      setMessage("");
+    } catch {
+      setStatus("error");
+    }
   }
+
+  const sending = status === "sending";
 
   return (
     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -145,6 +159,7 @@ function ContactForm() {
         onChange={(e) => setName(e.target.value)}
         placeholder={t("contact.namePlaceholder")}
         required
+        disabled={sending}
       />
       <Input
         label={t("contact.email")}
@@ -153,12 +168,14 @@ function ContactForm() {
         onChange={(e) => setEmail(e.target.value)}
         placeholder={t("contact.emailPlaceholder")}
         required
+        disabled={sending}
       />
       <Input
         label={t("contact.subject")}
         value={subject}
         onChange={(e) => setSubject(e.target.value)}
         placeholder={t("contact.subjectPlaceholder")}
+        disabled={sending}
       />
       <label
         style={{
@@ -176,8 +193,10 @@ function ContactForm() {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           required
+          minLength={10}
           rows={5}
           placeholder={t("contact.messagePlaceholder")}
+          disabled={sending}
           style={{
             fontFamily: "var(--font-text)",
             fontSize: 14,
@@ -193,11 +212,12 @@ function ContactForm() {
           }}
         />
       </label>
-      <Button type="submit" variant="primary" size="lg">
-        {t("contact.sendMessage")}
+      <Button type="submit" variant="primary" size="lg" disabled={sending}>
+        {sending ? t("contact.sending") : t("contact.sendMessage")}
       </Button>
-      {sent ? (
+      {status === "sent" ? (
         <p
+          role="status"
           style={{
             fontFamily: "var(--font-text)",
             fontSize: 13,
@@ -206,6 +226,22 @@ function ContactForm() {
           }}
         >
           {t("contact.sent")}
+        </p>
+      ) : null}
+      {status === "error" ? (
+        <p
+          role="alert"
+          style={{
+            fontFamily: "var(--font-text)",
+            fontSize: 13,
+            color: "var(--danger-700, #b91c1c)",
+            margin: 0,
+          }}
+        >
+          {t("contact.submitError")}{" "}
+          <a href={`mailto:${SUPPORT_EMAIL}`} style={{ color: "inherit", textDecoration: "underline" }}>
+            {SUPPORT_EMAIL}
+          </a>
         </p>
       ) : null}
     </form>

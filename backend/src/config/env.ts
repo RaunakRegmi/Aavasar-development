@@ -61,6 +61,8 @@ const RawEnvSchema = z.object({
   STRIPE_SUCCESS_URL: z.string().url().optional(),
   STRIPE_CANCEL_URL: z.string().url().optional(),
 
+  SUPPORT_EMAIL: z.string().email().default("hello@aavasar.np"),
+
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
 });
 
@@ -138,6 +140,8 @@ export const env = {
     successUrl: raw.STRIPE_SUCCESS_URL ?? `${raw.FRONTEND_ORIGIN}/recruiter/billing/success`,
     cancelUrl: raw.STRIPE_CANCEL_URL ?? `${raw.FRONTEND_ORIGIN}/recruiter/billing/cancel`,
   },
+
+  supportEmail: raw.SUPPORT_EMAIL,
 
   logLevel: raw.LOG_LEVEL,
 } as const;

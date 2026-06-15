@@ -60,6 +60,9 @@ import { RewardsRepository } from "@modules/rewards/rewards.repository";
 import { RewardsService } from "@modules/rewards/rewards.service";
 import { RewardsController } from "@modules/rewards/rewards.controller";
 
+import { ContactService } from "@modules/contact/contact.service";
+import { ContactController } from "@modules/contact/contact.controller";
+
 export interface Container {
   db: PrismaClient;
   userRepo: UserRepository;
@@ -104,6 +107,9 @@ export interface Container {
   rewardsRepo: RewardsRepository;
   rewardsService: RewardsService;
   rewardsController: RewardsController;
+
+  contactService: ContactService;
+  contactController: ContactController;
 }
 
 export type ContainerOverrides = Partial<Container>;
@@ -155,6 +161,9 @@ export function makeContainer(overrides: ContainerOverrides = {}): Container {
 
   const rewardsController = overrides.rewardsController ?? new RewardsController(rewardsService);
 
+  const contactService = overrides.contactService ?? new ContactService();
+  const contactController = overrides.contactController ?? new ContactController(contactService);
+
   return {
     db,
     userRepo, authRepo, gigRepo, uploadRepo, meRepo, appRepo, companyRepo, notificationRepo,
@@ -164,5 +173,6 @@ export function makeContainer(overrides: ContainerOverrides = {}): Container {
     dashboardRepo, dashboardService, dashboardController,
     billingRepo, billingService, billingController,
     rewardsRepo, rewardsService, rewardsController,
+    contactService, contactController,
   };
 }

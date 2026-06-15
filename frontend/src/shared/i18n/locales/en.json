@@ -172,7 +172,9 @@
     "message": "Message",
     "messagePlaceholder": "Tell us a bit about what you're looking for…",
     "sendMessage": "Send message",
-    "sent": "Your mail client just opened with everything filled in — hit send there and we'll take it from here.",
+    "sending": "Sending…",
+    "sent": "Thanks — your message is in. We'll reply to your email within one working day.",
+    "submitError": "Something went wrong. Please try again, or email us directly.",
     "mailSubject": "Aavasar enquiry"
   },
   "signUp": {
