@@ -28,7 +28,11 @@ const RawEnvSchema = z.object({
   // frontend also drops it on tab close (sessionStorage).
   JWT_REFRESH_TTL_SESSION_SECONDS: z.coerce.number().int().positive().default(86_400),
 
-  FRONTEND_ORIGIN: z.string().url(),
+  // Trailing slash stripped: CORS matches the `Origin` header by exact
+  // string, and browsers never send one (e.g. "https://foo.vercel.app"),
+  // so a copy-pasted "https://foo.vercel.app/" would otherwise silently
+  // fail every cross-origin request.
+  FRONTEND_ORIGIN: z.string().url().transform((v) => v.replace(/\/+$/, "")),
   OAUTH_SUCCESS_REDIRECT: z.string().url(),
   OAUTH_FAILURE_REDIRECT: z.string().url(),
 

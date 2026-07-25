@@ -55,6 +55,14 @@ import { makeContainer, type Container } from "@container/index";
 export function makeApp(container: Container = makeContainer()): Express {
   const app = express();
 
+  // Render (like Heroku/Railway) terminates TLS at a reverse proxy in
+  // front of this process and forwards over plain HTTP. Without this,
+  // req.ip is always the proxy's address (collapsing per-IP rate limits
+  // onto one shared bucket for every user) and req.protocol reports
+  // "http" even on an https request (breaking OAuth callback URLs, which
+  // are derived from the request). "1" trusts exactly one hop.
+  app.set("trust proxy", 1);
+
   // (1) helmet — sensible defaults for an API. Cross-origin resource
   // policy is loosened so the frontend (different origin) can <img>
   // user avatars served from this host.

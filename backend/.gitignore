@@ -1,5 +1,9 @@
 node_modules
 dist
+# User-uploaded files (avatars, NIDs, portfolios, company docs). These are
+# runtime data, not source — and on Render the disk is ephemeral anyway.
+uploads/*
+!uploads/.gitkeep
 .env
 .env.local
 .env.*.local
